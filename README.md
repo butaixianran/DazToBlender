@@ -4,9 +4,9 @@
 
 This fork fixed issues of blender 3.0 break change  
 
-It also fixed a big issue when importing pose.
+It also fixed a big issue which stops you from importing pose.
 
-And it will set position and rotation for env props like lights. This feature has not done yet, I'm just trying.
+And it will try to set position and rotation for env props like lights. This feature is not done yet, I'm just trying.
 
 
 ---
