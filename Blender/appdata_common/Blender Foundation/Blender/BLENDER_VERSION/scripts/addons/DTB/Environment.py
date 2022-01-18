@@ -37,6 +37,7 @@ class EnvProp:
         self.execute()
 
     def execute(self):
+        print("execute env")
         wm = bpy.context.window_manager
         wm.progress_begin(0, 100)
         Versions.active_object_none() # deselect all
@@ -98,8 +99,10 @@ class ReadFbx:
         adr = os.path.join(self.adr, "B_ENV.fbx")
         if os.path.exists(adr) == False:
             return
+        # objs is a part of bpy.data.objects
         objs = self.convert_file(adr)
         for obj in objs:
+            # print("obj.name: " + obj.name)
             if obj.type == 'MESH':
                 self.my_meshs.append(obj)
         if objs is None or len(objs) == 0:
@@ -119,6 +122,7 @@ class ReadFbx:
             obj.animation_data_clear()
         Versions.active_object(root)
         Global.deselect()
+        # print("root.type: " + root.type)
         if root.type == 'ARMATURE':
             self.import_as_armature(objs, root)
         #TODO: Remove Groups with no MESH   
@@ -134,6 +138,31 @@ class ReadFbx:
                 return False
             else:
                 self.import_empty(objs, Global.getEnvRoot())
+        else:
+            # set object's transform
+            for obj in objs:
+                # get transform data from dtu
+                data = self.pose.pose_data_dict
+                for key in data:
+                    if data[key]["Name"] == obj.name:
+                        #set transform
+                        # Position
+                        obj.location[0] = float(data[key]["Position"][0]/100)
+                        obj.location[1] = -float(data[key]["Position"][2]/100)
+                        obj.location[2] = float(data[key]["Position"][1]/100)
+
+                        # Rotation
+                        obj.rotation_euler[0] = math.radians(float(data[key]["Rotation"][0])+90)
+                        obj.rotation_euler[1] = math.radians(-float(data[key]["Rotation"][2]))
+                        obj.rotation_euler[2] = math.radians(float(data[key]["Rotation"][1]))
+
+                        #apply transform
+                        Global.setOpsMode("OBJECT")
+                        Versions.active_object(obj)
+                        Versions.select(obj, True)
+                        bpy.ops.object.transform_apply(location=True, rotation=True)
+                        Global.deselect()
+
         Global.change_size(Global.getEnvRoot())
         
         return True
@@ -245,7 +274,8 @@ class ReadFbx:
                 ob = Util.allobjs().get('daz_prop')
                 if ob is not None:
                     pb.custom_shape = ob
-                    pb.custom_shape_scale = 0.04
+                    #blender 3.0 break change
+                    Versions.handle_custom_shape_scale(pb, 0.04)
                     amtr.data.bones.get(pb.name).show_wire = True
             #Apply Limits and Change Rotation Order
             self.pose.bone_limit_modify(pb)
@@ -317,7 +347,3 @@ class ReadFbx:
         self.dtb_shaders.load_shader_nodes()
         for mesh in self.my_meshs:
             self.dtb_shaders.setup_materials(mesh)
-            
-
-
-    
