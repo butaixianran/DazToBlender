@@ -22,6 +22,7 @@ class Posing:
 
     def __init__(self, dtu):
         if isinstance(dtu, str):
+            print("is instance")
             self.select_figure()
             Global.setOpsMode("POSE")
         else:
@@ -348,12 +349,16 @@ class Posing:
                 axis = sep[4]
 
             value = keys[0][1]
+
             if bone not in self.pose_data_dict.keys():
                 self.pose_data_dict[bone] = {}
             if "Position" not in self.pose_data_dict[bone].keys():
                 self.pose_data_dict[bone]["Position"] = [0, 0, 0]
             if "Rotation" not in self.pose_data_dict[bone].keys():
                 self.pose_data_dict[bone]["Rotation"] = [0, 0, 0]
+            # handle scale
+            # if "Scale" not in self.pose_data_dict[bone].keys():
+            #     self.pose_data_dict[bone]["Scale"] = [1, 1, 1, 1]
             if axis == "x":
                 index = 0
             if axis == "y":
@@ -364,7 +369,23 @@ class Posing:
                 trans_key = "Position"
             if transform == "rotation":
                 trans_key = "Rotation"
-            self.pose_data_dict[bone][trans_key][index] = value
+            # there are scale data in .duf pose file, so we should record them.
+            # scale data has 4 index: general, x, y, z
+            # if transform == "scale":
+            #     trans_key = "Scale"
+            #     if axis == "general":
+            #         index = 0
+            #     if axis == "x":
+            #         index = 1
+            #     if axis == "y":
+            #         index = 2
+            #     if axis == "z":
+            #         index = 3
+
+            # we need to ignore scale data here
+            # otherwise all rotation data will be covered by scale data into [1,1,1]
+            if transform != "scale":
+                self.pose_data_dict[bone][trans_key][index] = value
 
         self.make_pose()
 
@@ -478,6 +499,7 @@ class Posing:
             pbs = self.fig_object.pose.bones
         else:
             pbs = armature.pose.bones
+
         for pb in pbs:
             if pb.name == "root":
                 bname = pb.name
@@ -504,13 +526,20 @@ class Posing:
                         pbs[bname].rotation_euler[i] = math.radians(float(fixed_rotation[i]))
                     pbs[bname].rotation_mode = new_order
             if "Daz Rotation Order" in pb.keys():
+                # print("find Daz Rotation Order in pb.keys")
                 order = pb["Daz Rotation Order"]
                 bname = pb.name
                 new_order = self.get_rotation_order(order)
                 if bname in transform_data.keys():
+                    # print("bname: " + bname)
                     
                     position = transform_data[bname]["Position"]
                     rotation = transform_data[bname]["Rotation"]
+                    # there is scale data in transform_data, but ignored here
+
+                    # print("position: " + str(position))
+                    # print("rotation: " + str(rotation))
+
                     # Position
                     if bname == "hip":
                         if self.get_offset() != 0:
@@ -530,8 +559,11 @@ class Posing:
                     pbs[bname].rotation_mode = order
                     for i in range(len(rotation)):      
                         pbs[bname].rotation_euler[i] = math.radians(float(fixed_rotation[i]))
+                        # print("rotation_euler "+ str(i) + " : ")
+                        # print(pbs[bname].rotation_euler[i])
                     pbs[bname].rotation_mode = new_order
-                    
+
+        # print("transform pose end")
         if (bpy.context.window_manager.add_pose_lib):
             if use == "FIG":
                 if self.pose_lib_check():
