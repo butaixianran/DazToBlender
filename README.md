@@ -1,12 +1,12 @@
 # Daz To Blender 3.0 quick fix
 
-**This is a fork to create pull request for the main repo.**  
+**This is a fork to do some fix and create pull request for the main repo.**  
 
-This fork fixed issues of blender 3.0 break change  
+This fork fixed issues by blender 3.0 break change  
 
 It also fixed a big issue which stops you from importing pose.
 
-And it will try to set position and rotation for env props like lights. This feature is not done yet, I'm just trying.
+And it will try to set position and rotation for env props like lights. This feature is not done yet, but still usable.
 
 
 ---
