@@ -6,7 +6,7 @@
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
-* Re-write material function, now it converts Daz's shader to Principled BSDF shader, so you can export all textures when exporting it from blender.
+* Re-write material function, now it converts Daz's shader to Principled BSDF shader without any additional nodes. So you can export all textures when exporting it from blender.
 
 **Known issue:**
 Do not use high heel, there is a bug hiding there, I'll try to fix it later.
