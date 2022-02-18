@@ -278,7 +278,7 @@ class ReadFbx:
                     Versions.handle_custom_shape_scale(pb, 0.04)
                     amtr.data.bones.get(pb.name).show_wire = True
             #Apply Limits and Change Rotation Order
-            self.pose.bone_limit_modify(pb)
+            # self.pose.bone_limit_modify(pb)
 
         # Hide Bones
         for hide in hides:

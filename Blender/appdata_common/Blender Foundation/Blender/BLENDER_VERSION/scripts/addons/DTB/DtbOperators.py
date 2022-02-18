@@ -234,7 +234,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             drb.set_bone_head_tail()  # Sets head and tail positions for all the bones
             Global.deselect()
             self.pbar(25, wm)
-            drb.bone_limit_modify()
+            # drb.bone_limit_modify()
             if anim.has_keyframe(Global.getAmtr()):
                 anim.clean_animations()
             Global.deselect()
@@ -324,9 +324,9 @@ class IMP_OT_FBX(bpy.types.Operator):
                                 amt.pose.bones[bname].constraints[
                                     bname + "_IK"
                                 ].influence = 0
-                drb.makeBRotationCut(
-                    db
-                )  # lock movements around axes with zeroed limits for each bone
+                # drb.makeBRotationCut(
+                #     db
+                # )  # lock movements around axes with zeroed limits for each bone
                 Global.deselect()
 
             # materials
