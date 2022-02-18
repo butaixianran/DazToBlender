@@ -7,6 +7,11 @@ from . import DataBase
 from . import Versions
 from . import Util
 
+useCustomBone = False
+useDrivers = True
+joinEyelashToBody = True
+removeShapeKeyDrivers = False
+usePrincipledMat = True
 isMan = False
 root = ""
 isGen = False

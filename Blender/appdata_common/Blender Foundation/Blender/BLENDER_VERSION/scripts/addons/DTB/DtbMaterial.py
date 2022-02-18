@@ -2,12 +2,14 @@ import os
 import json
 import pathlib
 import bpy
+import pprint
 
 from . import Global
 from . import NodeArrange
 from . import Versions
 from . import MatDct
 from . import Util
+
 
 
 # region top-level methods
@@ -350,6 +352,14 @@ class DtbShaders:
         color_rgb.append(1)  # alpha
         return color_rgb
 
+    
+    # remove shader_node from convert_color()
+    def daz_color_to_rgb(self, color):
+        color_hex = color.lstrip("#")
+        color_rgb = hex_to_col(color_hex)
+        color_rgb.append(1)  # alpha
+        return color_rgb
+
     def setup_materials(self, obj):
         for mat_slot in obj.material_slots:
 
@@ -471,3 +481,477 @@ class DtbShaders:
 
             if mat_nodes is not None:
                 NodeArrange.toNodeArrange(mat_nodes)
+
+
+    #set a texture node
+    def set_tex_node(self, tex_path, property_name, mat_nodes, mat_links, shader_node, input_key):
+        if os.path.exists(tex_path):
+            # this will set is_Diffuse or is_Alpha, which will be used in create_texture_input
+            self.check_map_type(property_name)
+            tex_image_node = mat_nodes.new("ShaderNodeTexImage")
+
+            self.create_texture_input(tex_path, tex_image_node)
+            tex_node_output = tex_image_node.outputs["Color"]
+            mat_links.new(
+                tex_node_output, shader_node.inputs[input_key]
+            )
+
+    #set value or add texture node
+    def set_value_or_tex(self, property_name, mat_nodes, mat_links, shader_node, input_key):
+        property = self.mat_property_dict.get(property_name)
+        if property is None:
+            print("can not find: " + property_name)
+            return
+
+        if property["Data Type"] == "Double":
+            shader_node.inputs[input_key].default_value = property["Value"]
+        elif len(property["Texture"])>0:
+            tex_path = property["Texture"]
+            self.set_tex_node(tex_path, property_name, mat_nodes, mat_links, shader_node, input_key)
+
+
+    #set color or add texture node
+    def set_color_or_tex(self, property_name, mat_nodes, mat_links, shader_node, input_key):
+        property = self.mat_property_dict.get(property_name)
+        if property is None:
+            print("can not find: " + property_name)
+            return
+
+        if property["Data Type"] == "Color":
+            color = self.daz_color_to_rgb(property["Value"])
+            shader_node.inputs[input_key].default_value = (color[0], color[1], color[2], color[3])
+
+        elif len(property["Texture"])>0:
+            tex_path = property["Texture"]
+            self.set_tex_node(tex_path, "Diffuse", mat_nodes, mat_links, shader_node, input_key)
+
+
+
+
+
+    # use Principled BSDF shader
+    def setup_principled_materials(self, obj):
+        for mat_slot in obj.material_slots:
+
+            mat = mat_slot.material
+            mat_name = mat.name
+
+            obj_name = obj.name.replace(".Shape", "")
+            obj_name = obj_name.split(".")[0]
+
+            if mat is None:
+                # Get or create a new material when slot is missing material
+                mat = bpy.data.materials.get(mat_slot.name) or bpy.data.materials.new(
+                    name=mat_slot.name
+                )
+                mat_slot.material = mat
+            if obj_name not in self.mat_data_dict.keys():
+                continue
+            if mat_name not in self.mat_data_dict[obj_name].keys():
+                mat_name = mat.name.split(".")[0]
+                if mat_name not in self.mat_data_dict[obj_name].keys():
+                    continue
+
+            mat_data = self.mat_data_dict[obj_name][mat_name]
+            self.mat_property_dict = self.get_mat_properties(mat_data)
+            # Set Custom Properties
+            for key in mat_data:
+                if not key == "Properties":
+                    mat[key] = mat_data[key]
+
+            # Update Name
+            new_name = mat["Asset Label"] + "_" + mat["Material Name"]
+
+            if bpy.context.window_manager.combine_materials:
+                # To Deal with a duplicate being converted first.
+                if new_name in bpy.data.materials:
+                    mat_slot.material = bpy.data.materials[new_name]
+                    bpy.data.materials.remove(mat)
+                    continue
+                mat.name = new_name
+                mat_name = mat.name
+                # To Deal with duplications
+                if self.optimize_materials(mat_slot):
+                    continue
+
+            mat.use_nodes = True
+            mat_nodes = mat.node_tree.nodes
+            mat_links = mat.node_tree.links
+
+
+            # map iray shader to Principled BSDF shader from here
+            
+            # find Principled BSDF shader node
+            shader_node = mat_nodes.get("Principled BSDF")
+
+            if shader_node == None:
+                print("can not find Principled BSDF node for mat: " + mat.name)
+                # do not create a new Principled BSDF, so we can see what may be wrong from shader editor
+                # make it easier to fix bugs
+                continue
+
+            # change subsurface_method to fixed. The new automatically one is not good and has bugs
+            shader_node.subsurface_method = 'RANDOM_WALK_FIXED_RADIUS'
+
+            # show info for debug
+            # pprint.pprint(self.mat_property_dict)
+            # print(" ")
+
+            # find "Normal Map" node
+            normal_node = mat_nodes.get("Normal Map")
+            if not normal_node is None:
+                # change label "Normal/Map" to "Normal Map"
+                # there is no such name as "Normal/Map" in blender
+                normal_node.label = "Normal Map"
+
+            # map iray material to blender
+            # iray mat's Properties looks like this:
+            # {
+            #     "Name": "Diffuse Weight",
+            #     "Label": "Diffuse Weight",
+            #     "Value": 1,
+            #     "Data Type": "Double",
+            #     "Texture": ""
+            # },
+            # {
+            #     "Name": "Diffuse Color",
+            #     "Label": "Base Color",
+            #     "Value": "#ffffff",
+            #     "Data Type": "Color",
+            #     "Texture": "texture_path.jpg"
+            # },
+            # {
+            #     "Name": "Diffuse Overlay Color",
+            #     "Label": "Diffuse Overlay Color",
+            #     "Value": "#c0c0c0",
+            #     "Data Type": "Color",
+            #     "Texture": ""
+            # },
+            for input_key in shader_node.inputs.keys():
+                # reset
+                property = None
+                tex_path = ""
+
+                if input_key == "Base Color":
+                    # an Image Texture node should already be linked to shader_node
+                    property = self.mat_property_dict.get("Diffuse Color")
+                    if property["Texture"] == "":
+                        # set color value
+                        color = self.daz_color_to_rgb(property["Value"])
+                        shader_node.inputs[input_key].default_value = (color[0], color[1], color[2], color[3])
+                    
+                elif input_key == "Subsurface":
+                    property = self.mat_property_dict.get("Translucency Weight")
+                    if property is None:
+                        print("can not find: " + "Translucency Weight")
+                        continue
+
+                    if property["Data Type"] == "Double":
+                        shader_node.inputs[input_key].default_value = property["Value"] * 0.01
+
+                    elif len(property["Texture"])>0:
+                        tex_path = property["Texture"]
+                        self.set_tex_node(tex_path, "Translucency Weight", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Subsurface Radius":
+                    # always use this value
+                    shader_node.inputs[input_key].default_value[0] = 0.2
+                    shader_node.inputs[input_key].default_value[1] = 0.2
+                    shader_node.inputs[input_key].default_value[2] = 0.2
+
+                elif input_key == "Subsurface Color":
+                    Translucency_Color = self.mat_property_dict.get("Translucency Color")
+                    # do not use Translucency Color's texture, always use the color value
+                    color = self.daz_color_to_rgb(Translucency_Color["Value"])
+
+                    # Base_Color_Effect values: Scatter Only(0), Scatter & Transmit(1)，Scatter & Transmit Intensity(2)
+                    Base_Color_Effect = self.mat_property_dict.get("Base Color Effect")
+                    if Base_Color_Effect["Value"] != 0:
+                        SSS_Reflectance_Tint = self.mat_property_dict.get("SSS Reflectance Tint")
+                        tint_color = self.daz_color_to_rgb(SSS_Reflectance_Tint["Value"])
+                        #r
+                        color[0] = color[0] * tint_color[0]
+                        #g
+                        color[1] = color[1] * tint_color[1]
+                        #b
+                        color[2] = color[2] * tint_color[2]
+                        #alpha is always 1, so no need to handle
+
+                    # set blender's color
+                    shader_node.inputs[input_key].default_value = (color[0], color[1], color[2], color[3])
+
+                elif input_key == "Subsurface IOR":
+                    # useless
+                    pass
+
+                elif input_key == "Subsurface Anisotropy":
+                    # useless
+                    pass
+
+                elif input_key == "Metallic":
+                    self.set_value_or_tex("Metallic Weight", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Specular":
+                    #need to merge Glossy and Dual Lobe Specular
+                    Dual_Lobe_Specular_Weight = self.mat_property_dict.get("Dual Lobe Specular Weight")
+                    Dual_Lobe_Specular_Reflectivity = self.mat_property_dict.get("Dual Lobe Specular Reflectivity")
+                    Specular_Lobe_1_Roughness = self.mat_property_dict.get("Specular Lobe 1 Roughness")
+                    Specular_Lobe_2_Roughness = self.mat_property_dict.get("Specular Lobe 2 Roughness")
+                    Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
+
+                    Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
+                    Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
+                    if Glossy_Weight["Value"] > 0:
+                        Glossy_Layered_Weight = Glossy_Weight
+
+                    Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
+                    Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
+
+                    if Dual_Lobe_Specular_Weight["Value"] > 0 and len(Dual_Lobe_Specular_Weight["Texture"])>0:
+                        #use Dual_Lobe_Specular_Weight texture
+                        self.set_tex_node(Dual_Lobe_Specular_Weight["Texture"], "Dual Lobe Specular Weight", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Dual_Lobe_Specular_Weight["Value"] > 0 and len(Dual_Lobe_Specular_Reflectivity["Texture"])>0:
+                        #use Dual_Lobe_Specular_Reflectivity texture
+                        self.set_tex_node(Dual_Lobe_Specular_Reflectivity["Texture"], "Dual Lobe Specular Reflectivity", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Glossy_Layered_Weight["Value"] > 0 and len(Glossy_Layered_Weight["Texture"])>0:
+                        #use Glossy_Layered_Weight texture
+                        self.set_tex_node(Glossy_Layered_Weight["Texture"], "Glossy Layered Weight", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Glossy_Layered_Weight["Value"] > 0 and len(Glossy_Reflectivity["Texture"])>0:
+                        #use Glossy_Reflectivity texture
+                        self.set_tex_node(Glossy_Reflectivity["Texture"], "Glossy Reflectivity", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] == 0:
+                        #use Dual_Lobe_Specular value
+                        shader_node.inputs[input_key].default_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"]
+
+                    elif Dual_Lobe_Specular_Weight["Value"] == 0 and Glossy_Layered_Weight["Value"] > 0:
+                        #use Glossy value
+                        shader_node.inputs[input_key].default_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]
+
+                    elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] > 0:
+                        # merge value
+                        # spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-Specular_Lobe_1_Roughness["Value"]*Dual_Lobe_Specular_Ratio["Value"])
+                        # glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
+
+                        # # use the smaller one
+                        # value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"]
+                        # if glossy_value < spec_value:
+                        #     value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]
+
+
+                        # merge value
+                        value = (Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] + Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]) * 0.5
+
+                        shader_node.inputs[input_key].default_value = value
+                    else:
+                        shader_node.inputs[input_key].default_value = 0
+
+                elif input_key == "Roughness":
+                    #need to merge Glossy and Dual Lobe Specular
+                    Dual_Lobe_Specular_Weight = self.mat_property_dict.get("Dual Lobe Specular Weight")
+                    Dual_Lobe_Specular_Reflectivity = self.mat_property_dict.get("Dual Lobe Specular Reflectivity")
+                    Specular_Lobe_1_Roughness = self.mat_property_dict.get("Specular Lobe 1 Roughness")
+                    Specular_Lobe_2_Roughness = self.mat_property_dict.get("Specular Lobe 2 Roughness")
+                    Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
+
+                    Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
+                    Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
+                    Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
+
+                    if Dual_Lobe_Specular_Weight["Value"] > 0 and len(Specular_Lobe_1_Roughness["Texture"])>0:
+                        #use Specular_Lobe_1_Roughness texture
+                        self.set_tex_node(Specular_Lobe_1_Roughness["Texture"], "Specular Lobe 1 Roughness", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Glossy_Layered_Weight["Value"] > 0 and len(Glossy_Roughness["Texture"])>0:
+                        #use Glossy_Roughness texture
+                        self.set_tex_node(Glossy_Roughness["Texture"], "Glossy Roughness", mat_nodes, mat_links, shader_node, input_key)
+
+                    elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] == 0:
+                        #use Dual_Lobe_Specular value
+                        shader_node.inputs[input_key].default_value = Specular_Lobe_1_Roughness["Value"]
+
+                    elif Dual_Lobe_Specular_Weight["Value"] == 0 and Glossy_Layered_Weight["Value"] > 0:
+                        #use Glossy value
+                        shader_node.inputs[input_key].default_value = Glossy_Roughness["Value"]
+
+                    elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] > 0:
+                        # # merge value
+                        # spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-Specular_Lobe_1_Roughness["Value"]*Dual_Lobe_Specular_Ratio["Value"])
+                        # glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
+
+                        # # use the smaller one
+                        # value = Specular_Lobe_1_Roughness["Value"]
+                        # if glossy_value < spec_value:
+                        #     value = Glossy_Roughness["Value"]
+
+                        # merge value
+                        value = (Specular_Lobe_1_Roughness["Value"] + Glossy_Roughness["Value"]) * 0.5
+
+                        shader_node.inputs[input_key].default_value = value
+                    else:
+                        shader_node.inputs[input_key].default_value = 0
+
+                elif input_key == "Anisotropic":
+                    value = 0
+                    Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
+                    Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
+
+                    if Glossy_Layered_Weight["Value"] > 0:
+                        Glossy_Anisotropy = self.mat_property_dict.get("Glossy Anisotropy")
+                        value = Glossy_Anisotropy["Value"]
+
+                    elif Top_Coat_Weight["Value"] > 0 or len(Top_Coat_Weight["Texture"])>0:
+                        Top_Coat_Anisotropy = self.mat_property_dict.get("Top Coat Anisotropy")
+                        value = Top_Coat_Anisotropy["Value"]
+
+                    shader_node.inputs[input_key].default_value = value
+
+
+                elif input_key == "Anisotropic Rotation":
+                    value = 0
+                    Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
+                    Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
+
+                    if Glossy_Layered_Weight["Value"] > 0:
+                        Glossy_Anisotropy_Rotations = self.mat_property_dict.get("Glossy Anisotropy Rotations")
+                        value = Glossy_Anisotropy_Rotations["Value"]
+
+                    elif Top_Coat_Weight["Value"] > 0 or len(Top_Coat_Weight["Texture"])>0:
+                        Top_Coat_Rotations = self.mat_property_dict.get("Top Coat Rotations")
+                        value = Top_Coat_Rotations["Value"]
+
+                    shader_node.inputs[input_key].default_value = value
+
+                elif input_key == "Sheen":
+                    # seems no such thing in daz mat
+                    pass
+
+                elif input_key == "Clearcoat":
+                    Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
+                    Reflectivity = self.mat_property_dict.get("Reflectivity")
+
+                    if len(Top_Coat_Weight["Texture"])>0:
+                        #use Top_Coat_Weight texture
+                        self.set_tex_node(Top_Coat_Weight["Texture"], "Top Coat Weight", mat_nodes, mat_links, shader_node, input_key)
+                    elif Top_Coat_Weight["Value"] > 0 and len(Reflectivity["Texture"])>0:
+                        #use Reflectivity texture
+                        self.set_tex_node(Reflectivity["Texture"], "Reflectivity", mat_nodes, mat_links, shader_node, input_key)
+                    else:
+                        #set value
+                        weight_value = Top_Coat_Weight["Value"]
+                        reflect_value = Reflectivity["Value"]
+                        shader_node.inputs[input_key].default_value = reflect_value * weight_value
+
+                elif input_key == "Clearcoat Roughness":
+                    self.set_value_or_tex("Top Coat Roughness", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Clearcoat Normal":
+                    # map to daz's Top Coat Bump, but nobody use it, so let's pass it
+                    pass
+
+                elif input_key == "IOR":
+                    self.set_value_or_tex("Refraction Index", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Transmission":
+                    self.set_value_or_tex("Refraction Weight", mat_nodes, mat_links, shader_node, input_key)
+
+                    # need to set alpha too
+                    Refraction_Weight = self.mat_property_dict.get("Refraction Weight")
+                    if Refraction_Weight["Value"] > 0:
+                        if shader_node.inputs["Alpha"].default_value > 0.3:
+                            shader_node.inputs["Alpha"].default_value = 0.3
+                            mat.blend_method = 'HASHED'
+                        
+
+                elif input_key == "Transmission Roughness":
+                    self.set_value_or_tex("Refraction Roughness", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Emission":                    
+                    property = self.mat_property_dict.get("Emission Color")
+                    if property is None:
+                        continue
+
+                    # do not handle color "#000000"
+                    if property["Texture"] == "" and property["Value"] == "#000000":
+                        pass
+                    else:
+                        self.set_color_or_tex("Emission Color", mat_nodes, mat_links, shader_node, input_key)
+
+                elif input_key == "Emission Strength":
+                    # map to Luminance, Luminance Units
+                    Luminance = self.mat_property_dict.get("Luminance")
+                    # Luminance Units: cd/m^2(0) kcd/m^2(1), cd/ft^2(2), cd/cm^2(3)
+                    Luminance_Units = self.mat_property_dict.get("Luminance Units")
+
+                    luminance_value = Luminance["Value"]
+                    if Luminance_Units == 1:
+                        luminance_value = luminance_value * 1000
+                    elif Luminance_Units == 2:
+                        luminance_value = luminance_value * (1/0.3048) * (1/0.3048)
+                    elif Luminance_Units == 3:
+                        luminance_value = luminance_value * 100 * 100
+
+                    shader_node.inputs[input_key].default_value = luminance_value/50000
+                    
+                elif input_key == "Alpha":
+                    #alpha texture should already be done
+                    pass
+                elif input_key == "Normal":
+                    # check both normal and bump texture
+                    Normal_Map = self.mat_property_dict.get("Normal Map")
+                    Bump_Strength = self.mat_property_dict.get("Bump Strength")
+
+                    if len(Normal_Map["Texture"])>0:
+                        #get Normal Map node:
+                        self.set_tex_node(Normal_Map["Texture"], "Normal Map", mat_nodes, mat_links, normal_node, "Color")
+                        normal_node.inputs["Strength"].default_value = Normal_Map["Value"]
+
+                    if len(Bump_Strength["Texture"])>0:
+                        # add Bump node
+                        bump_node = mat_nodes.new("ShaderNodeBump")
+                        self.set_tex_node(Bump_Strength["Texture"], "Bump", mat_nodes, mat_links, bump_node, "Height")
+                        bump_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.1
+                        bump_node.inputs["Distance"].default_value = 0.01
+
+                        # remove link between normal map node and shader
+                        for link in shader_node.inputs[input_key].links:
+                            mat_links.remove(link)
+
+                        # link bump node to shader
+                        mat_links.new(bump_node.outputs[input_key], shader_node.inputs[input_key])
+                        # link normal node to bump node
+                        mat_links.new(normal_node.outputs[input_key], bump_node.inputs[input_key])
+
+
+
+            # handle Tile
+            Horizontal_Tiles = self.mat_property_dict.get("Horizontal Tiles")
+            Vertical_Tiles = self.mat_property_dict.get("Vertical Tiles")
+
+            if Horizontal_Tiles["Value"] > 1 or Vertical_Tiles["Value"] > 1:
+                # create Mapping node and Coord node
+                mapping_node = mat_nodes.new("ShaderNodeMapping")
+                coord_node = mat_nodes.new("ShaderNodeTexCoord")
+                # set value
+                # x
+                mapping_node.inputs["Scale"].default_value[0] = Horizontal_Tiles["Value"]
+                # y
+                mapping_node.inputs["Scale"].default_value[1] = Vertical_Tiles["Value"]
+                # link them
+                mat_links.new(coord_node.outputs["UV"], mapping_node.inputs["Vector"])
+                # link mapping_node to all texture node
+                for node in mat_nodes:
+                    if node.bl_idname == "ShaderNodeTexImage":
+                        mat_links.new(mapping_node.outputs["Vector"], node.inputs["Vector"])
+
+
+            # Set Alpha Modes
+            Cutout_Opacity = self.mat_property_dict.get("Cutout Opacity")
+            if shader_node.inputs["Alpha"].default_value < 1 or len(Cutout_Opacity["Texture"])>0:
+                mat.blend_method = 'HASHED'
+
+            # if mat_nodes is not None:
+            #     NodeArrange.toNodeArrange(mat_nodes)

@@ -170,13 +170,14 @@ class IMP_OT_FBX(bpy.types.Operator):
     def finish_obj(self):
         Versions.reverse_language()
         Versions.pivot_active_element_and_center_and_trnormal()
-        Global.setRenderSetting(True)
+        # do not change render setting, user has their own way
+        # Global.setRenderSetting(True)
 
     def layGround(self):
         Util.deleteEmptyDazCollection()
         if bpy.context.window_manager.update_scn_settings:
             bpy.context.preferences.inputs.use_mouse_depth_navigate = True
-            bpy.context.scene.render.engine = "CYCLES"
+            # bpy.context.scene.render.engine = "CYCLES"
             bpy.context.space_data.shading.type = "SOLID"
             bpy.context.space_data.shading.color_type = "OBJECT"
             bpy.context.space_data.shading.show_shadows = False
@@ -241,21 +242,43 @@ class IMP_OT_FBX(bpy.types.Operator):
             drb.unwrapuv()
             Global.deselect()
 
+
+            # now, we have every material, and a Principled BSDF node in every material
+            # Also, basic color map is linked to Principled BSDF node, a Normal/Map node is created
+            # notice, blender use "Normal Map" node, so this "Normal/Map" node, is actually wrong.
+
             # materials
             dtb_shaders.make_dct()
-            dtb_shaders.load_shader_nodes()
-            body = Global.getBody()
-            dtb_shaders.setup_materials(body)
-            self.pbar(35, wm)
 
-            fig_objs_names = [Global.get_Body_name()]
-            for obj in Util.myacobjs():
-                # Skip for any of the following cases
-                case1 = not Global.isRiggedObject(obj)
-                case2 = obj.name in fig_objs_names
-                if case1 or case2:
-                    continue
-                dtb_shaders.setup_materials(obj)
+            if Global.usePrincipledMat:
+                body = Global.getBody()
+                dtb_shaders.setup_principled_materials(body)
+                self.pbar(35, wm)
+
+                fig_objs_names = [Global.get_Body_name()]
+                for obj in Util.myacobjs():
+                    # Skip for any of the following cases
+                    case1 = not Global.isRiggedObject(obj)
+                    case2 = obj.name in fig_objs_names
+                    if case1 or case2:
+                        continue
+                    dtb_shaders.setup_principled_materials(obj)
+            else:
+                # try not touch the old code
+                dtb_shaders.load_shader_nodes()
+
+                body = Global.getBody()
+                dtb_shaders.setup_materials(body)
+                self.pbar(35, wm)
+
+                fig_objs_names = [Global.get_Body_name()]
+                for obj in Util.myacobjs():
+                    # Skip for any of the following cases
+                    case1 = not Global.isRiggedObject(obj)
+                    case2 = obj.name in fig_objs_names
+                    if case1 or case2:
+                        continue
+                    dtb_shaders.setup_materials(obj)
 
             self.pbar(40, wm)
 
@@ -267,42 +290,49 @@ class IMP_OT_FBX(bpy.types.Operator):
             Global.deselect()
 
             # Shape keys
-            dsk.make_drivers()
-            Global.deselect()
-            self.pbar(60, wm)
+            # Only if user want drivers
+            if Global.useDrivers:
+                dsk.make_drivers()
+                Global.deselect()
+                self.pbar(60, wm)
 
-            drb.makeRoot()
-            drb.makePole()
-            drb.makeIK()
-            drb.pbone_limit()
-            drb.mub_ary_Z()
-            self.pbar(70, wm)
-            Global.setOpsMode("OBJECT")
-            try:
-                CustomBones.CBones()
-            except:
-                print("Custom bones currently not supported for this character")
-            self.pbar(80, wm)
-            Global.setOpsMode("OBJECT")
-            Global.deselect()
-            self.pbar(90, wm)
-            amt = Global.getAmtr()
-            for bname in DtbIKBones.bone_name:
-                if bname in amt.pose.bones.keys():
-                    bone = amt.pose.bones[bname]
-                    for bc in bone.constraints:
-                        if bc.name == bname + "_IK":
-                            pbik = amt.pose.bones.get(bname + "_IK")
-                            amt.pose.bones[bname].constraints[
-                                bname + "_IK"
-                            ].influence = 0
-            drb.makeBRotationCut(
-                db
-            )  # lock movements around axes with zeroed limits for each bone
-            Global.deselect()
+            # only use custom bone when user checked
+            if Global.useCustomBone:
+                drb.makeRoot()
+                drb.makePole()
+                drb.makeIK()
+                drb.pbone_limit()
+                drb.mub_ary_Z()
+                self.pbar(70, wm)
+                Global.setOpsMode("OBJECT")
+                try:
+                    CustomBones.CBones()
+                except Exception as e:
+                    print(str(e))
+                    print("Custom bones currently not supported for this character")
+                self.pbar(80, wm)
+                Global.setOpsMode("OBJECT")
+                Global.deselect()
+                self.pbar(90, wm)
+                amt = Global.getAmtr()
+                for bname in DtbIKBones.bone_name:
+                    if bname in amt.pose.bones.keys():
+                        bone = amt.pose.bones[bname]
+                        for bc in bone.constraints:
+                            if bc.name == bname + "_IK":
+                                pbik = amt.pose.bones.get(bname + "_IK")
+                                amt.pose.bones[bname].constraints[
+                                    bname + "_IK"
+                                ].influence = 0
+                drb.makeBRotationCut(
+                    db
+                )  # lock movements around axes with zeroed limits for each bone
+                Global.deselect()
 
             # materials
-            DtbMaterial.forbitMinus()
+            # handle Principled BSDF mat
+            # This offical bridge do not use Principled BSDF node, so forbitMinus() actually does nothing
+            # DtbMaterial.forbitMinus()
             self.pbar(95, wm)
             Global.deselect()
 
@@ -324,6 +354,47 @@ class IMP_OT_FBX(bpy.types.Operator):
             self.report({"INFO"}, "Success")
         else:
             self.show_error()
+
+        # Join Eyelashes into body
+        if Global.joinEyelashToBody:
+            Global.deselect()
+            # get mesh name
+            findEyelash = False
+            for ob in bpy.context.scene.objects:
+                if ob.type == 'MESH':
+                    findEyelash = Global.find_EYLS(ob)
+
+            print("findEyelash: " + str(findEyelash))
+
+            eyelashName = Global.get_Eyls_name()
+            bodyName = Global.get_Body_name()
+            print("eyelashName: " + eyelashName)
+            print("bodyName: " + bodyName)
+
+            if eyelashName != "" and bodyName != "":
+                # select meshes
+                bpy.data.objects[bodyName].select_set(True)
+                bpy.data.objects[eyelashName].select_set(True)
+                # set eyelash mesh as active
+                # 2.8 new api
+                bpy.context.view_layer.objects.active = bpy.data.objects[bodyName]
+                # join into one
+                bpy.ops.object.join()
+                # Clear eyelash's name
+                Global.setEylsIsJoined()
+
+            Global.deselect()
+
+        # Remove shapekey drivers
+        if Global.removeShapeKeyDrivers:
+            bodyName = Global.get_Body_name()
+            if bodyName != "":
+                body = bpy.data.objects[bodyName]
+                #get shape key
+                for sk in body.data.shape_keys.key_blocks.values():
+                    sk.driver_remove("value")
+
+            
 
         wm.progress_end()
         DtbIKBones.ik_access_ban = False
