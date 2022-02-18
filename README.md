@@ -1,4 +1,4 @@
-# Daz To Blender 3.0 quick fix
+# Daz To Blender 3.0 fixed version
 
 **This is a fork to do some update.**  
 
