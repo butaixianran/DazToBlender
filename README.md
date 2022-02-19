@@ -23,6 +23,7 @@ About Subsurface: Blender will add a very strong blur to subsurface material, wh
 So I converted it in this way:  
 `Blender's Subsurface = Translucency Weight * 0.1`  
 Then you can see your model more clearly. You can alwasy make it higher as you wish.  
+I personally use this: `Blender's Subsurface = Translucency Weight * 0.01`  
 
 ---
 * Owner: [Daz 3D][OwnerURL] – [@Daz3d][TwitterURL]
