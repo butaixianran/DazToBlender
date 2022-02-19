@@ -2,6 +2,7 @@
 
 **This is a fork to do some update.**  
 
+## Update log:
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
@@ -12,12 +13,16 @@
   - Use Principled shader: Uncheck to use iray shader
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
-  - > Be noticed, EyeClosed shape key is not a real shape key, it is a driver of EyeClosedL and EyeClosedR. If you don't use drivers, EyeClosed shape key won't work, you need to set EyeClosedL and EyeClosedR directly.
 
-> About Subsurface: Blender will add a very strong blur to subsurface material, which will make you can not see your model clearly.
-> So I converted it in this way:
-> Blender's Subsurface = Translucency Weight * 0.1
-> Then you can see your model more clearly. You can alwasy make it higher as you wish.
+## Notice
+### EyeClosed shape key
+Be noticed, EyeClosed shape key is not a real shape key, it is a driver of EyeClosedL and EyeClosedR. If you don't use drivers, EyeClosed shape key won't work, you need to set EyeClosedL and EyeClosedR directly.  
+
+### Subsurface
+About Subsurface: Blender will add a very strong blur to subsurface material, which will make you can not see your model clearly.  
+So I converted it in this way:  
+`Blender's Subsurface = Translucency Weight * 0.1`  
+Then you can see your model more clearly. You can alwasy make it higher as you wish.  
 
 ---
 * Owner: [Daz 3D][OwnerURL] – [@Daz3d][TwitterURL]
