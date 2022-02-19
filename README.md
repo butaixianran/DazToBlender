@@ -8,9 +8,9 @@
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
 * Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures when exporting it from blender.
 * Add options for importing:
- * Use Principled shader: Uncheck to use iray shader
- * Custom Shape: Check to use custom shapes for bones
- * Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
+ - Use Principled shader: Uncheck to use iray shader
+ - Custom Shape: Check to use custom shapes for bones
+ - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
   * Be noticed, EyeClosed morph is not a real morph, it is a driver of EyeClosedL and EyeClosedR. If you don't use drivers, EyeClosed shape key won't work, you need to set EyeClosedL and EyeClosedR directly.
 
 ---
