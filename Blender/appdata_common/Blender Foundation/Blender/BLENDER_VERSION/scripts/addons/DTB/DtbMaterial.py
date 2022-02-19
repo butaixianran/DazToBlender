@@ -668,7 +668,7 @@ class DtbShaders:
                         continue
 
                     if property["Data Type"] == "Double":
-                        shader_node.inputs[input_key].default_value = property["Value"] * 0.1
+                        shader_node.inputs[input_key].default_value = property["Value"] * Global.sss_rate
 
                     elif len(property["Texture"])>0:
                         tex_path = property["Texture"]
@@ -728,6 +728,17 @@ class DtbShaders:
                     Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
                     Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
 
+                    # calculate dual lobe specular's final roughness
+                    r1 = Specular_Lobe_1_Roughness["Value"]
+                    r2 = Specular_Lobe_2_Roughness["Value"]
+                    ratio = Dual_Lobe_Specular_Ratio["Value"]
+                    # (1- rated_r) = ((1-r2) * (1-ratio) + (1-r1) * ratio)
+                    rated_r = 1 - (((1-r2) * (1-ratio)) + ((1-r1) * ratio))
+                    if rated_r > 1:
+                        rated_r = 1
+                    elif rated_r < 0:
+                        rated_r = 0
+
                     if Dual_Lobe_Specular_Weight["Value"] > 0 and len(Dual_Lobe_Specular_Weight["Texture"])>0:
                         #use Dual_Lobe_Specular_Weight texture
                         self.set_tex_node(Dual_Lobe_Specular_Weight["Texture"], "Dual Lobe Specular Weight", mat_nodes, mat_links, shader_node, input_key)
@@ -754,17 +765,16 @@ class DtbShaders:
 
                     elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] > 0:
                         # merge value
-                        # spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-Specular_Lobe_1_Roughness["Value"]*Dual_Lobe_Specular_Ratio["Value"])
-                        # glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
+                        spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-rated_r)
+                        glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
 
-                        # # use the smaller one
-                        # value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"]
-                        # if glossy_value < spec_value:
-                        #     value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]
-
+                        # use the higher one
+                        value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]
+                        if spec_value > glossy_value:
+                            value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"]
 
                         # merge value
-                        value = (Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] + Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]) * 0.5
+                        # value = (Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] + Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"]) * 0.5
 
                         shader_node.inputs[input_key].default_value = value
                     else:
@@ -779,8 +789,64 @@ class DtbShaders:
                     Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
 
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
+                    Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
+                    if Glossy_Weight["Value"] > 0:
+                        Glossy_Layered_Weight = Glossy_Weight
+
                     Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
                     Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
+
+                    # calculate dual lobe specular's final roughness
+                    r1 = Specular_Lobe_1_Roughness["Value"]
+                    r2 = Specular_Lobe_2_Roughness["Value"]
+                    ratio = Dual_Lobe_Specular_Ratio["Value"]
+                    # (1- rated_r) = ((1-r2) * (1-ratio) + (1-r1) * ratio)
+                    rated_r = 1 - (((1-r2) * (1-ratio)) + ((1-r1) * ratio))
+                    if rated_r > 1:
+                        rated_r = 1
+                    elif rated_r < 0:
+                        rated_r = 0
+
+                    glossy_r = Glossy_Roughness["Value"]
+                    # if there is a texture for weight or Reflectivity, 
+                    # since we can not add node between texture node and Princile shader node
+                    # we merge it's value to roughness
+                    if len(Glossy_Layered_Weight["Texture"]) > 0 :
+                        # (1-new_value) = (1-value)*Glossy_Layered_Weight["Value"]
+                        glossy_r = 1-((1-glossy_r)*Glossy_Layered_Weight["Value"])
+                        if glossy_r > 1:
+                            glossy_r = 1
+                        elif glossy_r < 0:
+                            glossy_r = 0
+
+                    if len(Glossy_Reflectivity["Texture"]) > 0 :
+                        # (1-new_value) = (1-value)*Glossy_Reflectivity["Value"]
+                        glossy_r = 1-((1-glossy_r)*Glossy_Reflectivity["Value"])
+                        if glossy_r > 1:
+                            glossy_r = 1
+                        elif glossy_r < 0:
+                            glossy_r = 0
+
+
+                    spec_r = rated_r
+                    # if there is a texture for weight or Reflectivity, 
+                    # since we can not add node between texture node and Princile shader node
+                    # we merge it's value to roughness
+                    if len(Dual_Lobe_Specular_Weight["Texture"]) > 0 :
+                        # (1-new_value) = (1-value)*Dual_Lobe_Specular_Weight["Value"]
+                        spec_r = 1-((1-spec_r)*Dual_Lobe_Specular_Weight["Value"])
+                        if spec_r > 1:
+                            spec_r = 1
+                        elif spec_r < 0:
+                            spec_r = 0
+
+                    if len(Dual_Lobe_Specular_Reflectivity["Texture"]) > 0 :
+                        # (1-new_value) = (1-value)*Dual_Lobe_Specular_Reflectivity["Value"]
+                        spec_r = 1-((1-spec_r)*Dual_Lobe_Specular_Reflectivity["Value"])
+                        if spec_r > 1:
+                            spec_r = 1
+                        elif spec_r < 0:
+                            spec_r = 0
 
                     if Dual_Lobe_Specular_Weight["Value"] > 0 and len(Specular_Lobe_1_Roughness["Texture"])>0:
                         #use Specular_Lobe_1_Roughness texture
@@ -792,24 +858,24 @@ class DtbShaders:
 
                     elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] == 0:
                         #use Dual_Lobe_Specular value
-                        shader_node.inputs[input_key].default_value = Specular_Lobe_1_Roughness["Value"]
+                        shader_node.inputs[input_key].default_value = spec_r
 
                     elif Dual_Lobe_Specular_Weight["Value"] == 0 and Glossy_Layered_Weight["Value"] > 0:
                         #use Glossy value
-                        shader_node.inputs[input_key].default_value = Glossy_Roughness["Value"]
+                        shader_node.inputs[input_key].default_value = glossy_r
 
                     elif Dual_Lobe_Specular_Weight["Value"] > 0 and Glossy_Layered_Weight["Value"] > 0:
-                        # # merge value
-                        # spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-Specular_Lobe_1_Roughness["Value"]*Dual_Lobe_Specular_Ratio["Value"])
-                        # glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
+                        # merge value
+                        spec_value = Dual_Lobe_Specular_Reflectivity["Value"] * Dual_Lobe_Specular_Weight["Value"] * (1-rated_r)
+                        glossy_value = Glossy_Reflectivity["Value"] * Glossy_Layered_Weight["Value"] * (1-Glossy_Roughness["Value"])
 
-                        # # use the smaller one
-                        # value = Specular_Lobe_1_Roughness["Value"]
-                        # if glossy_value < spec_value:
-                        #     value = Glossy_Roughness["Value"]
+                        # use the higher one
+                        value = glossy_r
+                        if spec_value > glossy_value:
+                            value = spec_r
 
                         # merge value
-                        value = (Specular_Lobe_1_Roughness["Value"] + Glossy_Roughness["Value"]) * 0.5
+                        # value = (spec_r + glossy_r) * 0.5
 
                         shader_node.inputs[input_key].default_value = value
                     else:
@@ -928,7 +994,7 @@ class DtbShaders:
                     if len(Normal_Map["Texture"])>0:
                         #get Normal Map node:
                         self.set_tex_node(Normal_Map["Texture"], "Normal Map", mat_nodes, mat_links, normal_node, "Color")
-                        normal_node.inputs["Strength"].default_value = Normal_Map["Value"]
+                        normal_node.inputs["Strength"].default_value = Normal_Map["Value"]*0.5
 
                     if len(Bump_Strength["Texture"])>0:
                         # add Bump node

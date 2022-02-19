@@ -54,6 +54,14 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bRemoveShapeKeyDrivers
     )
 
+    sss_rate : bpy.props.FloatProperty(
+        name="SSS Rate",
+        description="Rate between Principled Subsurface and Daz's Translucency Weight",
+        default = Global.sss_rate,
+        min = 0,
+        max = 1
+    )
+
 
 
 
@@ -82,6 +90,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         l.prop(dtbImportOptGroup, "bUsePrincipledMat")
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
+        l.prop(dtbImportOptGroup, "sss_rate")
 
         if context.object and context.active_object:
             cobj = context.active_object
@@ -159,6 +168,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
             Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
+            Global.sss_rate = dtbImportOptGroup.sss_rate
 
 
 class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
