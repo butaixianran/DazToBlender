@@ -9,7 +9,7 @@
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
 * Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures when exporting it from blender.
 * Fixed node arranging function for Principled shader
-* Calculate Dual Lobe Specular as it should be, to get better Specular and Roughness value.
+* Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
 * Add options for importing:
   - Use Principled shader: Uncheck to use iray shader
   - Custom Shape: Check to use custom shapes for bones
