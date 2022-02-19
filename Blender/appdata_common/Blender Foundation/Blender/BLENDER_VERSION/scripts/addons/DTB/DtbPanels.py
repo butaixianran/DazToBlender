@@ -27,6 +27,36 @@ region = "UI"
 BV = Versions.getBV()
 
 
+# add some options for importing
+class ImportOptionGroup(bpy.types.PropertyGroup):
+
+    bUsePrincipledMat : bpy.props.BoolProperty(
+        name="Use Principled Shader",
+        description="Check to use Principled Shader for material",
+        default = Global.bUsePrincipledMat
+    )
+
+    bUseCustomBone : bpy.props.BoolProperty(
+        name="Custom Shape",
+        description="Check to use custom shape for bones",
+        default = Global.bUseCustomBone
+    )
+
+    bUseDrivers : bpy.props.BoolProperty(
+        name="Use Drivers",
+        description="Check to use drivers for shape key",
+        default = Global.bUseDrivers
+    )
+    
+    bRemoveShapeKeyDrivers : bpy.props.BoolProperty(
+        name="Remove Shape Key Drivers",
+        description="Check to Remove Shape Key Drivers when importing",
+        default = Global.bRemoveShapeKeyDrivers
+    )
+
+
+
+
 class View3DPanel:
     bl_space_type = "VIEW_3D"
     bl_region_type = region
@@ -46,6 +76,13 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         w_mgr = context.window_manager
         box.operator("import.fbx", icon="POSE_HLT")
         box.operator("import.env", icon="WORLD")
+
+        # checkbox for some options
+        dtbImportOptGroup = context.scene.dtbImportOptGroup
+        l.prop(dtbImportOptGroup, "bUsePrincipledMat")
+        l.prop(dtbImportOptGroup, "bUseCustomBone")
+        l.prop(dtbImportOptGroup, "bUseDrivers")
+
         if context.object and context.active_object:
             cobj = context.active_object
             if (
@@ -116,6 +153,12 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
                         l.label(text=DtbIKBones.obj_exsported)
 
                 l.separator()
+
+            # set import option
+            Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
+            Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
+            Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
+            Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
 
 
 class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):

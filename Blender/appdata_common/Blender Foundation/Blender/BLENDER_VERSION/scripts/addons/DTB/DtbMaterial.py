@@ -464,6 +464,27 @@ class DtbShaders:
                                     tex_node_output, shader_node.inputs[input_key]
                                 )
 
+
+
+            # handle Tile
+            Horizontal_Tiles = self.mat_property_dict.get("Horizontal Tiles")
+            Vertical_Tiles = self.mat_property_dict.get("Vertical Tiles")
+            if Horizontal_Tiles["Value"] > 1 or Vertical_Tiles["Value"] > 1:
+                # create Mapping node and Coord node
+                mapping_node = mat_nodes.new("ShaderNodeMapping")
+                coord_node = mat_nodes.new("ShaderNodeTexCoord")
+                # set value
+                # x
+                mapping_node.inputs["Scale"].default_value[0] = Horizontal_Tiles["Value"]
+                # y
+                mapping_node.inputs["Scale"].default_value[1] = Vertical_Tiles["Value"]
+                # link them
+                mat_links.new(coord_node.outputs["UV"], mapping_node.inputs["Vector"])
+                # link mapping_node to all texture node
+                for node in mat_nodes:
+                    if node.bl_idname == "ShaderNodeTexImage":
+                        mat_links.new(mapping_node.outputs["Vector"], node.inputs["Vector"])
+
             # Set Alpha Modes
             self.check_refract()
             self.set_eevee_refract(mat)
@@ -953,5 +974,5 @@ class DtbShaders:
             if shader_node.inputs["Alpha"].default_value < 1 or len(Cutout_Opacity["Texture"])>0:
                 mat.blend_method = 'HASHED'
 
-            # if mat_nodes is not None:
-            #     NodeArrange.toNodeArrange(mat_nodes)
+            if mat_nodes is not None:
+                NodeArrange.toNodeArrange(mat_nodes)

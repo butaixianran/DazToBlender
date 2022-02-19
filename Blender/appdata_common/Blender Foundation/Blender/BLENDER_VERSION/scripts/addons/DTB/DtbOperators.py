@@ -224,7 +224,10 @@ class IMP_OT_FBX(bpy.types.Operator):
             pose.add_skeleton_data()
 
             Global.deselect()  # deselect all the objects
-            pose.clear_pose()  # Select Armature and clear transform
+            if Global.bClearPose:
+                print("clear pose")
+                pose.clear_pose()  # Select Armature and clear transform
+
             drb.mub_ary_A()  # Find and read FIG.dat file
             drb.orthopedy_empty()  # On "EMPTY" type objects
             self.pbar(18, wm)
@@ -250,7 +253,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             # materials
             dtb_shaders.make_dct()
 
-            if Global.usePrincipledMat:
+            if Global.bUsePrincipledMat:
                 body = Global.getBody()
                 dtb_shaders.setup_principled_materials(body)
                 self.pbar(35, wm)
@@ -291,13 +294,14 @@ class IMP_OT_FBX(bpy.types.Operator):
 
             # Shape keys
             # Only if user want drivers
-            if Global.useDrivers:
+            if Global.bUseDrivers:
+                print("Use Drivers")
                 dsk.make_drivers()
                 Global.deselect()
                 self.pbar(60, wm)
 
             # only use custom bone when user checked
-            if Global.useCustomBone:
+            if Global.bUseCustomBone:
                 drb.makeRoot()
                 drb.makePole()
                 drb.makeIK()
@@ -356,7 +360,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             self.show_error()
 
         # Join Eyelashes into body
-        if Global.joinEyelashToBody:
+        if Global.bJoinEyelashToBody:
             Global.deselect()
             # get mesh name
             findEyelash = False
@@ -386,7 +390,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             Global.deselect()
 
         # Remove shapekey drivers
-        if Global.removeShapeKeyDrivers:
+        if Global.bRemoveShapeKeyDrivers:
             bodyName = Global.get_Body_name()
             if bodyName != "":
                 body = bpy.data.objects[bodyName]

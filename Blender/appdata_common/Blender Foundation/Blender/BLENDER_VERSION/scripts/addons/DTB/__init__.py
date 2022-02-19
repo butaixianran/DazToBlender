@@ -267,6 +267,7 @@ classes = (
     DtbPanels.DTB_PT_COMMANDS,
     DtbPanels.DTB_PT_UTILITIES,
     DtbPanels.DTB_PT_MORE_INFO,
+    DtbPanels.ImportOptionGroup,
     DtbOperators.OP_SAVE_CONFIG,
     DtbOperators.IMP_OT_POSE,
     DtbOperators.IMP_OT_FBX,
@@ -326,12 +327,16 @@ def register():
     load_handler(None)
     bpy.app.handlers.load_post.append(load_handler)
 
+    # Import Option Group
+    bpy.types.Scene.dtbImportOptGroup = bpy.props.PointerProperty(type=DtbPanels.ImportOptionGroup)
+
 
 def unregister():
     bpy.app.handlers.load_post.remove(load_handler)
     for cls in classes:
         bpy.utils.unregister_class(cls)
     del bpy.types.Scene.dtb_custom_path
+    del bpy.types.Scene.dtbImportOptGroup
 
 
 if __name__ == "__main__":
