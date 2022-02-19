@@ -668,7 +668,7 @@ class DtbShaders:
                         continue
 
                     if property["Data Type"] == "Double":
-                        shader_node.inputs[input_key].default_value = property["Value"] * 0.01
+                        shader_node.inputs[input_key].default_value = property["Value"] * 0.1
 
                     elif len(property["Texture"])>0:
                         tex_path = property["Texture"]
