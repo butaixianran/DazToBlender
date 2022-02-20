@@ -14,6 +14,7 @@
   - Use Principled shader: Uncheck to use iray shader
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
+  - Convert Bump map into Normal map: It is very very slow, and converted Normal map file size is very very big. Only use it if you have to.
   - SSS Rate: Rate between Principled Subsurface and Daz's Translucency Weight
 
 ## Notice
@@ -25,6 +26,13 @@ Blender will add a very strong blur to subsurface material, which will make you 
 So it is converted in this way:  
 `Blender's Subsurface = Translucency Weight * SSS_Rate` (SSS_Rate's default value is 0.1)  
 Then you can see your model more clearly. You can alwasy change SSS Rate on the Panel as you wish  
+
+### Convert Bump Map to Normal Map
+This process is purely done in blender without installing any third party package. So it is very very slow.  
+
+And Blender doesn't has an API to compress image. So the converted Normal map file size is very big. A bump map with 1mb, will converted into a Normal map with 13-18mb.  
+
+So only use this if you have too.  
 
 ---
 * Owner: [Daz 3D][OwnerURL] – [@Daz3d][TwitterURL]
