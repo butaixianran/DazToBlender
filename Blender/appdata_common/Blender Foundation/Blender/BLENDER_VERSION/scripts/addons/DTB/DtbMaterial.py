@@ -9,7 +9,7 @@ from . import NodeArrange
 from . import Versions
 from . import MatDct
 from . import Util
-
+from . import BumpToNormal
 
 
 # region top-level methods
@@ -997,20 +997,36 @@ class DtbShaders:
                         normal_node.inputs["Strength"].default_value = Normal_Map["Value"]*0.5
 
                     if len(Bump_Strength["Texture"])>0:
-                        # add Bump node
-                        bump_node = mat_nodes.new("ShaderNodeBump")
-                        self.set_tex_node(Bump_Strength["Texture"], "Bump", mat_nodes, mat_links, bump_node, "Height")
-                        bump_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.1
-                        bump_node.inputs["Distance"].default_value = 0.01
+                        if Global.bConvertBumpToNormal and Normal_Map["Texture"] == "":
+                            # convert bump map into normal map
+                            # put it into the same folder of bump map
+                            # use name as: bumFileName_normal
+                            # use the same file type as bump map
+                            # and get the normal file's path
+                            normal_path = BumpToNormal.bumpToNormalAuto(Bump_Strength["Texture"])
 
-                        # remove link between normal map node and shader
-                        for link in shader_node.inputs[input_key].links:
-                            mat_links.remove(link)
+                            if normal_path != "":
+                               # create node for this normal map
+                               # #get Normal Map node:
+                               self.set_tex_node(normal_path, "Normal Map", mat_nodes, mat_links, normal_node, "Color")
+                               normal_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.5
+                            else:
+                                print("convert bump to normal failed")
+                        else:
+                            # add Bump node
+                            bump_node = mat_nodes.new("ShaderNodeBump")
+                            self.set_tex_node(Bump_Strength["Texture"], "Bump", mat_nodes, mat_links, bump_node, "Height")
+                            bump_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.1
+                            bump_node.inputs["Distance"].default_value = 0.01
 
-                        # link bump node to shader
-                        mat_links.new(bump_node.outputs[input_key], shader_node.inputs[input_key])
-                        # link normal node to bump node
-                        mat_links.new(normal_node.outputs[input_key], bump_node.inputs[input_key])
+                            # remove link between normal map node and shader
+                            for link in shader_node.inputs[input_key].links:
+                                mat_links.remove(link)
+
+                            # link bump node to shader
+                            mat_links.new(bump_node.outputs[input_key], shader_node.inputs[input_key])
+                            # link normal node to bump node
+                            mat_links.new(normal_node.outputs[input_key], bump_node.inputs[input_key])
 
 
 

@@ -13,6 +13,7 @@ bUseDrivers = False
 bRemoveShapeKeyDrivers = False
 bJoinEyelashToBody = True
 bClearPose = True
+bConvertBumpToNormal = False
 # rate between Blender's Subsurface and iray's Translucency Weight
 sss_rate = 0.1
 isMan = False

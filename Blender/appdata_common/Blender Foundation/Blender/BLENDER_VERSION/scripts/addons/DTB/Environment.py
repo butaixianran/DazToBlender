@@ -147,14 +147,14 @@ class ReadFbx:
                     if data[key]["Name"] == obj.name:
                         #set transform
                         # Position
-                        obj.location[0] = float(data[key]["Position"][0]/100)
-                        obj.location[1] = -float(data[key]["Position"][2]/100)
-                        obj.location[2] = float(data[key]["Position"][1]/100)
+                        obj.location[0] = float(data[key]["Position"][0]*0.01)
+                        obj.location[1] = -float(data[key]["Position"][2]*0.01)
+                        obj.location[2] = float(data[key]["Position"][1]*0.01)
 
                         # Rotation
-                        obj.rotation_euler[0] = math.radians(float(data[key]["Rotation"][0])+90)
-                        obj.rotation_euler[1] = math.radians(-float(data[key]["Rotation"][2]))
-                        obj.rotation_euler[2] = math.radians(float(data[key]["Rotation"][1]))
+                        obj.rotation_euler.x = math.radians(float(data[key]["Rotation"][0])+90)
+                        obj.rotation_euler.y = -math.radians(float(data[key]["Rotation"][2]))
+                        obj.rotation_euler.z = math.radians(float(data[key]["Rotation"][1]))
 
                         #apply transform
                         Global.setOpsMode("OBJECT")

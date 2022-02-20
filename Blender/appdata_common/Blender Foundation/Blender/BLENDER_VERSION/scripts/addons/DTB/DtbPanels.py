@@ -42,6 +42,12 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bUseCustomBone
     )
 
+    bConvertBumpToNormal: bpy.props.BoolProperty(
+        name="Convert Bump To Normal",
+        description="It is very slow and converted normal file size is very big, only use it if you have to",
+        default = Global.bConvertBumpToNormal
+    )
+
     bUseDrivers : bpy.props.BoolProperty(
         name="Use Drivers",
         description="Check to use drivers for shape key",
@@ -90,6 +96,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         l.prop(dtbImportOptGroup, "bUsePrincipledMat")
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
+        l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
         l.prop(dtbImportOptGroup, "sss_rate")
 
         if context.object and context.active_object:
@@ -165,6 +172,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
 
             # set import option
             Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
+            Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
             Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
