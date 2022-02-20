@@ -2,7 +2,8 @@
 
 **This is a fork to do some update.**  
 
-**The main update is to allow you export Daz model from Blender with all textures correctly. So, you can use Blender as a Daz Bridge for all 3D tools.**  
+**The main update is to allow you export Daz model from Blender with all textures correctly. So, you can use Blender as a Daz Bridge for all 3D tools.**   
+Then you don't need anyother Daz Bridge anymore, even Daz doesn't update any other bridge, you still can export Daz model into any 3D tools by Blender.
 
 ## Update log:
 * Fixed issues by blender 3.0 break change  
