@@ -6,7 +6,7 @@
 
 Then you don't need any other Daz Bridge anymore, even Daz won't update any bridge, you still can export Daz model into any 3D tools by Blender.
 
-## Update log:
+## Updated Feature:
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
