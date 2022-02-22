@@ -68,7 +68,7 @@ class EnvProp:
         return {"FINISHED"}
 
     def set_default_settings(self):
-        bpy.context.scene.render.engine = 'CYCLES'
+        # bpy.context.scene.render.engine = 'CYCLES'
         bpy.context.space_data.shading.type = 'SOLID'
         bpy.context.space_data.shading.color_type = 'OBJECT'
         bpy.context.space_data.shading.show_shadows = False
@@ -344,6 +344,13 @@ class ReadFbx:
     
     def setMaterial(self):
         self.dtb_shaders.make_dct()
-        self.dtb_shaders.load_shader_nodes()
-        for mesh in self.my_meshs:
-            self.dtb_shaders.setup_materials(mesh)
+
+        #use principled materials when import env
+        if Global.bUsePrincipledMat:
+            for mesh in self.my_meshs:
+                self.dtb_shaders.setup_principled_materials(mesh)
+        else:
+            # try not touch the old code
+            self.dtb_shaders.load_shader_nodes()
+            for mesh in self.my_meshs:
+                self.dtb_shaders.setup_materials(mesh)
