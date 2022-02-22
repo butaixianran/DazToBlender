@@ -16,6 +16,8 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 * Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
 * Add options for importing:
   - Use Principled shader: Uncheck to use iray shader
+  - High Heel: check to ignore feet rotation for high heel to escape from a bug which is hard to fix.
+  - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. Notice: some pose may need it.
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
   - Convert Bump map into Normal map: It is very very slow, and converted Normal map file size is very very big. Only use it if you have to.
