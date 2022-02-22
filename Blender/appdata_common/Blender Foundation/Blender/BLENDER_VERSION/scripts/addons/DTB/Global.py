@@ -8,6 +8,8 @@ from . import Versions
 from . import Util
 
 bUsePrincipledMat = True
+isHighHeel = False
+bRotationLimit = True
 bUseCustomBone = False
 bUseDrivers = False
 bRemoveShapeKeyDrivers = False

@@ -237,7 +237,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             drb.set_bone_head_tail()  # Sets head and tail positions for all the bones
             Global.deselect()
             self.pbar(25, wm)
-            # drb.bone_limit_modify()
+            drb.bone_limit_modify()
             if anim.has_keyframe(Global.getAmtr()):
                 anim.clean_animations()
             Global.deselect()
@@ -347,6 +347,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             drb.finishjob()
             Global.setOpsMode("OBJECT")
             if not anim.has_keyframe(Global.getAmtr()):
+                print("restore pose")
                 pose.update_scale()
                 pose.restore_pose()  # Run when no animation exists.
             DtbIKBones.bone_disp(-1, True)
@@ -356,6 +357,15 @@ class IMP_OT_FBX(bpy.types.Operator):
             if bpy.context.window_manager.morph_prefix:
                 bpy.ops.rename.morphs('EXEC_DEFAULT')
             self.report({"INFO"}, "Success")
+
+            #turn off limits
+            if not Global.bRotationLimit:
+                print("turn off limits")
+                amt = Global.getAmtr()
+                for bone in amt.pose.bones:
+                    for con in bone.constraints:
+                        con.mute = True
+
         else:
             self.show_error()
 
@@ -397,6 +407,7 @@ class IMP_OT_FBX(bpy.types.Operator):
                 #get shape key
                 for sk in body.data.shape_keys.key_blocks.values():
                     sk.driver_remove("value")
+
 
             
 

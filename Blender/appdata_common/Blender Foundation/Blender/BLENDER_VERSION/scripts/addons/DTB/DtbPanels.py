@@ -36,6 +36,19 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bUsePrincipledMat
     )
 
+
+    isHighHeel : bpy.props.BoolProperty(
+        name="High Heel",
+        description="Check to ignore feet rotation",
+        default = Global.isHighHeel
+    )
+
+    bRotationLimit : bpy.props.BoolProperty(
+        name="Rotation Limit",
+        description="Uncheck to turn off Rotation Limit",
+        default = Global.bRotationLimit
+    )
+
     bUseCustomBone : bpy.props.BoolProperty(
         name="Custom Shape",
         description="Check to use custom shape for bones",
@@ -94,6 +107,8 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         # checkbox for some options
         dtbImportOptGroup = context.scene.dtbImportOptGroup
         l.prop(dtbImportOptGroup, "bUsePrincipledMat")
+        l.prop(dtbImportOptGroup, "isHighHeel")
+        l.prop(dtbImportOptGroup, "bRotationLimit")
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
         l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
@@ -172,6 +187,8 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
 
             # set import option
             Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
+            Global.isHighHeel = dtbImportOptGroup.isHighHeel
+            Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
             Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers

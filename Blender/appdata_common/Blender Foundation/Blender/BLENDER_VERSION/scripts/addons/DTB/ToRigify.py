@@ -100,8 +100,8 @@ class ToRigify:
         if self.check_if_possible():
             return
         Global.convert_vgroups()  # Updates VertexGroups
-        # if len(Global.get_bone_limit()) == 0:  # Seems not Necessary
-            # Global.bone_limit_modify()
+        if len(Global.get_bone_limit()) == 0:  # Seems not Necessary
+            Global.bone_limit_modify()
         wm.progress_update(5)
         dobj = Global.getAmtr()
         Versions.select(dobj, True)

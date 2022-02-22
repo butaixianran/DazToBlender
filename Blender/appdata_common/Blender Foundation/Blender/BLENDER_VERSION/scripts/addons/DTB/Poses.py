@@ -22,7 +22,7 @@ class Posing:
 
     def __init__(self, dtu):
         if isinstance(dtu, str):
-            print("is instance")
+            # print("is instance")
             self.select_figure()
             Global.setOpsMode("POSE")
         else:
@@ -325,8 +325,10 @@ class Posing:
 
 
     def pose_copy(self,dur):
+        print("run pose_copy")
         self.pose_data_dict = {}
         if os.path.exists(dur) == False:
+            print("can not find path: " + dur)
             return
         pose_data = self.load_duf(dur)
         self.pose_data_dict["Asset Name"] = pose_data["asset_info"]["id"].split("/")[-1].replace("%20"," ").replace(".duf","")
@@ -488,6 +490,7 @@ class Posing:
 
     
     def make_pose(self, use="FIG", armature=None):
+        print("run make_pose")
         Global.setOpsMode("POSE")
         bone_limits = self.bone_limits_dict
         transform_data = self.pose_data_dict
@@ -501,6 +504,11 @@ class Posing:
             pbs = armature.pose.bones
 
         for pb in pbs:
+            # ignore high heeled feet
+            if Global.isHighHeel:
+                if pb.name == "lToe" or pb.name == "rToe" or pb.name == "lMetatarsals" or pb.name == "rMetatarsals" or pb.name == "lFoot" or pb.name == "rFoot":
+                    continue
+
             if pb.name == "root":
                 bname = pb.name
                 order = "YXZ"
@@ -508,6 +516,7 @@ class Posing:
                 pb.rotation_mode = new_order
                 
                 if "root" in transform_data.keys():
+                    print("find root")
                     position = transform_data[bname]["Position"]
                     rotation = transform_data[bname]["Rotation"]
                     for i in range(len(position)):
