@@ -485,18 +485,42 @@ class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
         default=".duf",
         options={"HIDDEN"},
     )
-    filter_glob: StringProperty(
-        default="*.duf",
-        options={"HIDDEN"},
-    )
+    # filter_glob: StringProperty(
+    #     default="*.duf",
+    #     options={"HIDDEN"},
+    # )
     files: bpy.props.CollectionProperty(type=DtbProperties.ImportFilesCollection)
 
     def execute(self, context):
+        # check file ext
+        duf_ext = ".duf"
+        root, ext = os.path.splitext(self.filepath)
+        if ext != duf_ext:
+            if root.endswith(duf_ext):
+                self.filepath = root
+            else:
+                self.filepath = root + ".duf"
+
         # Instance Classes
         pose = Poses.Posing("POSE")
         dirname = os.path.dirname(self.filepath)
+        print("dirname: " + dirname)
         for i, f in enumerate(self.files, 1):
+            # check file name
+            root, ext = os.path.splitext(f.name)
+            if ext != duf_ext:
+                if root.endswith(duf_ext):
+                    f.name = root
+                else:
+                    f.name = root + ".duf"
+
             durPath = os.path.join(dirname, f.name)
+            
+            #check file exist
+            if not os.path.isfile(durPath):
+                print("path is not a file: " + durPath)
+                return {"FINISHED"}
+            
             pose.pose_copy(durPath)
         return {"FINISHED"}
 
