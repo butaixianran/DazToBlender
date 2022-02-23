@@ -985,7 +985,12 @@ class DtbShaders:
                     
                 elif input_key == "Alpha":
                     #alpha texture should already be done
-                    pass
+                    # but need to set texture type to non-color
+                    for link in shader_node.inputs[input_key].links:
+                        alpha_texture = link.from_node
+                        if alpha_texture.bl_idname == "ShaderNodeTexImage":
+                            Versions.to_color_space_non(alpha_texture)
+
                 elif input_key == "Normal":
                     # check both normal and bump texture
                     Normal_Map = self.mat_property_dict.get("Normal Map")
@@ -1007,7 +1012,7 @@ class DtbShaders:
 
                             if normal_path != "":
                                # create node for this normal map
-                               # #get Normal Map node:
+                               # get Normal Map node:
                                self.set_tex_node(normal_path, "Normal Map", mat_nodes, mat_links, normal_node, "Color")
                                normal_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.5
                             else:
