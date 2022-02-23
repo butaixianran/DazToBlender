@@ -7,6 +7,10 @@
 Then you don't need any other Daz Bridge anymore, even Daz won't update any bridge, you still can export Daz model into any 3D tools by Blender.
 
 ## Updated Feature:
+### Daz Script
+* Handle high heel. If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.
+
+### Blender Addon
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
@@ -16,13 +20,15 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 * Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
 * Add options for importing:
   - Use Principled shader: Uncheck to use iray shader
-  - High Heel: check to ignore feet rotation for high heel to escape from a bug which is hard to fix.
+  - High Heel: check to ignore feet rotation for high heel, also works when importing pose.
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. Notice: some pose may need it.
   - Keep Limit on Twist Bone: check to keep twist bone's rotation limit, but turn off other bones'
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
   - Convert Bump map into Normal map: It is very very slow, and converted Normal map file size is very very big. Only use it if you have to.
   - SSS Rate: Rate between Principled Subsurface and Daz's Translucency Weight
+
+
 
 ## Notice
 ### EyeClosed shape key
