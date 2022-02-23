@@ -224,12 +224,12 @@ class IMP_OT_FBX(bpy.types.Operator):
             pose.add_skeleton_data()
 
             Global.deselect()  # deselect all the objects
-            if Global.bClearPose:
-                print("clear pose")
-                pose.clear_pose()  # Select Armature and clear transform
+            print("clear pose")
+            pose.clear_pose()  # Select Armature and clear transform
 
             drb.mub_ary_A()  # Find and read FIG.dat file
             drb.orthopedy_empty()  # On "EMPTY" type objects
+
             self.pbar(18, wm)
             drb.orthopedy_everything()  # clear transform, clear and reapply parent, CMs -> METERS
             Global.deselect()
