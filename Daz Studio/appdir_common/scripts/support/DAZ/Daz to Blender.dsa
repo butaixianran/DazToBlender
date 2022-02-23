@@ -72,6 +72,10 @@
 	var s_bIncludeMorphs;
 	var s_bCollectTextures;
 	
+	//high heel Pose Controls:[left, right]
+	var ctrlFootHeeled = [0, 0]
+	//used Pose Controls: FootHeeledShoe
+	var isFootHeeledShoeUsed = false
 	
 	
 // --- START Sub Script ----
@@ -769,6 +773,113 @@
 		
 	};
 	
+
+
+	/*********************************************************************/
+	// void : ...
+	function restoreHeelPoseControl( figure )
+	{
+		print("start restoreHeelPoseControl");
+
+		if (!isFootHeeledShoeUsed) {return;}
+		//check left and right heeled morph value
+		if (ctrlFootHeeled[0] == 0 && ctrlFootHeeled[1] == 0) {return;}
+
+		for (var i = 0; i < figure.getNumProperties(); i++) {
+			property = figure.getProperty(i);
+			name = property.name;
+
+			//left heel
+			if(name == "pCTRLlFootHeeledShoe") {
+				property.setValue(ctrlFootHeeled[0])
+			}
+			//right heel
+			else if(name == "pCTRLrFootHeeledShoe") {
+				property.setValue(ctrlFootHeeled[1])
+			}
+		}
+	};
+
+
+	/*********************************************************************/
+	// void : ...
+	function clearHeelPoseControl( figure )
+	{
+		print("start clearHeelPoseControl");
+
+		for (var i = 0; i < figure.getNumProperties(); i++) {
+			property = figure.getProperty(i);
+			name = property.name;
+
+			//left heel
+			if(name == "pCTRLlFootHeeledShoe") {
+				//save value for restore it later
+				ctrlFootHeeled[0] = property.getValue();
+
+				if (property.getValue()>0) {
+					isFootHeeledShoeUsed = true;
+				}
+
+				//clear value
+				property.setValue(0);
+
+			}
+			//right heel
+			else if(name == "pCTRLrFootHeeledShoe") {
+				//save value for restore it later
+				ctrlFootHeeled[1] = property.getValue();
+
+				if (property.getValue()>0) {
+					isFootHeeledShoeUsed = true;
+				}
+
+				//clear value
+				property.setValue(0);
+			}
+		}
+	};
+
+
+	/*********************************************************************/
+	// void : ...
+	function clearPose( oBaseNode )
+	{
+		print("start clear pose");
+		var oTopNode;
+		var aNodes;
+		var oNode;
+		var aPose;
+		
+		var aTopNodes = oBaseNode.getNodeChildren( false );
+		for( var i = 0; i < aTopNodes.length; i += 1 ){
+			oTopNode = aTopNodes[i];
+			if( oTopNode.name != "hip" ){
+				continue;
+			}
+			
+			aNodes = oTopNode.getNodeChildren( true );
+			aNodes.push( oTopNode );
+			aNodes.unshift( oBaseNode );
+			for( var j = 0; j < aNodes.length; j += 1 ){
+				oNode = aNodes[j];
+				if( getMeshType( oNode ) != s_oMeshTypes.Bone && j > 0 ){
+					continue;
+				}
+				
+				for( var k = 0; k < s_aPoseData.length; k += 1 ){
+					aPose = s_aPoseData[k];
+					if( aPose[0] == oNode.name ){
+						oNode.setLocalPos( DzVec3(0,0,0) );
+						oNode.setLocalRot( DzQuat(0,0,0,1) );
+						oNode.setLocalScale( aPose[4] );
+						break;
+					}
+				}
+			}
+		}
+	};
+
+
 	/*********************************************************************/
 	// void : ...
 	function restorePose( oBaseNode )
@@ -2564,6 +2675,10 @@
 				// Export Figure
 				loadFigureBoneData( oFigure );
 				loadPoseData( oFigure, true );
+				
+				//clear high heel pose morph
+				clearHeelPoseControl(oFigure);
+
 				setEyelashVisibility( oFigure, false );
 				exportOBJ( oFigure, s_sFig, i );
 				setEyelashVisibility( oFigure, true );
@@ -2572,6 +2687,10 @@
 				}
 				exportFBX( oFigure, s_sFig, i , bDebugFBX );
 				setLock( oFigure, false, true );
+
+				//restore high heel pose morph
+				restoreHeelPoseControl(oFigure);
+
 				restorePose( oFigure );
 				reparentFigure( oFigure );
 				if ( s_bIncludeMorphs ){
