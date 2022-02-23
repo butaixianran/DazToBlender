@@ -49,6 +49,14 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bRotationLimit
     )
 
+    bLimitOnTwist : bpy.props.BoolProperty(
+        name="Keep Limit on Twist Bone",
+        description="Check to keep Limit on Twist Bone, but turn off other bone's limit",
+        default = Global.bLimitOnTwist
+    )
+
+    
+
     bUseCustomBone : bpy.props.BoolProperty(
         name="Custom Shape",
         description="Check to use custom shape for bones",
@@ -109,6 +117,10 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         l.prop(dtbImportOptGroup, "bUsePrincipledMat")
         l.prop(dtbImportOptGroup, "isHighHeel")
         l.prop(dtbImportOptGroup, "bRotationLimit")
+
+        if not dtbImportOptGroup.bRotationLimit:
+            l.prop(dtbImportOptGroup, "bLimitOnTwist")
+
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
         l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
@@ -189,6 +201,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
             Global.isHighHeel = dtbImportOptGroup.isHighHeel
             Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
+            Global.bLimitOnTwist = dtbImportOptGroup.bLimitOnTwist
             Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers

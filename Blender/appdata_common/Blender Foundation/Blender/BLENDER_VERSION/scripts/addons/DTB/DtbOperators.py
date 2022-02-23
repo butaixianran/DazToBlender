@@ -363,6 +363,11 @@ class IMP_OT_FBX(bpy.types.Operator):
                 print("turn off limits")
                 amt = Global.getAmtr()
                 for bone in amt.pose.bones:
+                    if Global.bLimitOnTwist:
+                        # pass Twist bone
+                        if "Twist" in bone.name:
+                            continue
+
                     for con in bone.constraints:
                         con.mute = True
 

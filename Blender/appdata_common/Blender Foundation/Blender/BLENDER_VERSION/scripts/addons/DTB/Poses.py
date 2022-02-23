@@ -386,7 +386,7 @@ class Posing:
 
             # we need to ignore scale data here
             # otherwise all rotation data will be covered by scale data into [1,1,1]
-            if transform != "scale":
+            if transform == "translation" or transform == "rotation":
                 self.pose_data_dict[bone][trans_key][index] = value
 
         self.make_pose()

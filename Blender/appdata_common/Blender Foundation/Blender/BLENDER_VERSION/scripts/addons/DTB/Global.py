@@ -9,7 +9,8 @@ from . import Util
 
 bUsePrincipledMat = True
 isHighHeel = False
-bRotationLimit = True
+bRotationLimit = False
+bLimitOnTwist = True
 bUseCustomBone = False
 bUseDrivers = False
 bRemoveShapeKeyDrivers = False
