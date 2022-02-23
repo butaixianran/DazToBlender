@@ -11,16 +11,17 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 * Handle high heel. If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.
 
 ### Blender Addon
+* **Allow Import Pose by choose Tip Image file**
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
-* Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures when exporting it from blender.
+* **Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures when exporting it from blender.**
 * Fixed node arranging function for Principled shader
 * Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
 * Add options for importing:
   - Use Principled shader: Uncheck to use iray shader
-  - High Heel: check to ignore feet rotation for high heel, **also works when importing pose.**
+  - **High Heel: check to ignore feet rotation for high heel, also works when importing pose.**
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. Notice: some pose may need it.
   - Keep Limit on Twist Bone: check to keep twist bone's rotation limit, but turn off other bones'
   - Custom Shape: Check to use custom shapes for bones
