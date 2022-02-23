@@ -11,7 +11,7 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 * Handle high heel. If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.
 
 ### Blender Addon
-* **Allow Importing Pose by select Tip Image file**
+* **Allow Importing Pose by selecting Tip Image file**
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
