@@ -20,7 +20,7 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 * Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
 * Add options for importing:
   - Use Principled shader: Uncheck to use iray shader
-  - High Heel: check to ignore feet rotation for high heel, also works when importing pose.
+  - High Heel: check to ignore feet rotation for high heel, **also works when importing pose.**
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. Notice: some pose may need it.
   - Keep Limit on Twist Bone: check to keep twist bone's rotation limit, but turn off other bones'
   - Custom Shape: Check to use custom shapes for bones
