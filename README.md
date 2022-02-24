@@ -12,7 +12,7 @@ Then you don't need any other Daz Bridge anymore, even Daz won't update any brid
 
 ### Blender Addon
 * **Allow Importing Pose by selecting Tip Image file**
-* **Now it can import animation from .duf file**
+* **Now it can import animation from .duf file**, animation will be on a new NLA tracker as a clip
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Try to set position and rotation for env props like lights.
