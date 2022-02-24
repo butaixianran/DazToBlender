@@ -1,36 +1,35 @@
 # Daz To Blender 3.0 fixed version
 
-**This is a fork to do some update.**  
+**This is fork did some really good updates, have a try.**  
 
-**The main update is to allow you export Daz model from Blender with all textures correctly. So, you can use Blender as a Daz Bridge for all 3D tools.**    
-
-Then you don't need any other Daz Bridge anymore, even Daz won't update any bridge, you still can export Daz model into any 3D tools by Blender.
+**This updated version allow you to export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools. So you do not need any other bridge any more.**    
 
 ## Updated Feature:
 ### Daz Script
-* Handle high heel. If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.
+* Handle high heel. (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
 
 ### Blender Addon
-* **Allow Importing Pose by selecting Tip Image file**
-* **Now it can import animation from .duf file**, animation will be on a new NLA tracker as a clip
-* Fixed issues by blender 3.0 break change  
-* Fixed a big issue when importing pose. Now you can import poses without problem
+#### New Feature
+* **Importing Pose by selecting Tip Image file**
+* **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
+* **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
 * Try to set position and rotation for env props like lights.
-* Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
-* **Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures when exporting it from blender.**
-* Fixed node arranging function for Principled shader
+* **Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures from blender.**
 * Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
-* Add options for importing:
+* **A lot of new options for importing:**  
   - Use Principled shader: Uncheck to use iray shader
   - **High Heel: check to ignore feet rotation for high heel, also works when importing pose.**
-  - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. Notice: some pose may need it.
-  - Keep Limit on Twist Bone: check to keep twist bone's rotation limit, but turn off other bones'
+  - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. 
+  - **Keep Limit on Twist Bone:** check to keep twist bone's rotation limit, but turn off other bones' limit
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
   - Convert Bump map into Normal map: It is very very slow, and converted Normal map file size is very very big. Only use it if you have to.
-  - SSS Rate: Rate between Principled Subsurface and Daz's Translucency Weight
+  - **SSS Rate:** Rate between Principled Subsurface and Daz's Translucency Weight
 
-
+#### Bug fix
+* Fixed issues by blender 3.0 break change  
+* Fixed a big issue when importing pose. Now you can import poses without problem
+* Fixed node arranging function for Principled shader
 
 ## Notice
 ### EyeClosed shape key
