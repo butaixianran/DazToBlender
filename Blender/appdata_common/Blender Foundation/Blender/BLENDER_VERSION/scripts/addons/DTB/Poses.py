@@ -51,6 +51,11 @@ class Posing:
 
     def select_figure(self):
         fig_object_name = bpy.context.window_manager.choose_daz_figure
+
+        if (fig_object_name is None) or (fig_object_name == ""):
+            print("can not get daz figure")
+            return
+
         Global.deselect()
         bpy.context.view_layer.objects.active = bpy.data.objects[fig_object_name]
         
@@ -323,13 +328,13 @@ class Posing:
         bpy.ops.pose.transforms_clear()
         Global.setOpsMode('OBJECT')
 
-
     def pose_copy(self,dur):
         print("run pose_copy")
         self.pose_data_dict = {}
-        if os.path.exists(dur) == False:
+        if not os.path.exists(dur):
             print("can not find path: " + dur)
             return
+
         pose_data = self.load_duf(dur)
         self.pose_data_dict["Asset Name"] = pose_data["asset_info"]["id"].split("/")[-1].replace("%20"," ").replace(".duf","")
         for info in pose_data["scene"]["animations"]:
@@ -390,6 +395,82 @@ class Posing:
                 self.pose_data_dict[bone][trans_key][index] = value
 
         self.make_pose()
+
+
+
+
+    def animation_copy(self,dur):
+        print("run animation_copy")
+        self.pose_data_dict = {}
+        if not os.path.exists(dur):
+            print("can not find path: " + dur)
+            return
+
+        pose_data = self.load_duf(dur)
+        self.pose_data_dict["Asset Name"] = pose_data["asset_info"]["id"].split("/")[-1].replace("%20"," ").replace(".duf","")
+        for info in pose_data["scene"]["animations"]:
+            url = info["url"]
+            keys = info["keys"]
+            sep = url.split("/")
+            # To Deal with Shape_keys info
+            if "#" in sep[2]:
+                continue
+
+            # To Deal with Root Bone
+            if "?" in sep[2]:
+                bone = "root"
+                transform = sep[2].split("?")[1]
+                axis = sep[3]
+            else:
+                bone = sep[3].split(":?")[0]
+                transform = sep[3].split(":?")[1]
+                axis = sep[4]
+
+            # convert daz time into frame number
+            for key in keys:
+                key[0] = round(float(key[0])*30)
+
+            value = keys
+
+            if bone not in self.pose_data_dict.keys():
+                self.pose_data_dict[bone] = {}
+            if "Position" not in self.pose_data_dict[bone].keys():
+                self.pose_data_dict[bone]["Position"] = [0, 0, 0]
+            if "Rotation" not in self.pose_data_dict[bone].keys():
+                self.pose_data_dict[bone]["Rotation"] = [0, 0, 0]
+            # handle scale
+            # if "Scale" not in self.pose_data_dict[bone].keys():
+            #     self.pose_data_dict[bone]["Scale"] = [1, 1, 1, 1]
+            if axis == "x":
+                index = 0
+            if axis == "y":
+                index = 1
+            if axis == "z":
+                index = 2
+            if transform == "translation":
+                trans_key = "Position"
+            if transform == "rotation":
+                trans_key = "Rotation"
+            # there are scale data in .duf pose file, so we should record them.
+            # scale data has 4 index: general, x, y, z
+            # if transform == "scale":
+            #     trans_key = "Scale"
+            #     if axis == "general":
+            #         index = 0
+            #     if axis == "x":
+            #         index = 1
+            #     if axis == "y":
+            #         index = 2
+            #     if axis == "z":
+            #         index = 3
+
+            # we need to ignore scale data here
+            # otherwise all rotation data will be covered by scale data into [1,1,1]
+            if transform == "translation" or transform == "rotation":
+                self.pose_data_dict[bone][trans_key][index] = value
+
+        self.make_animation()
+
 
     def reorder_rotation(self,rotation_order,rotations,name):
         if rotation_order == 'XYZ':
@@ -458,6 +539,82 @@ class Posing:
             return rotations
         return rotations
 
+
+
+
+    def reorder_animation_rotation(self,rotation_order,rotations,name):
+        if rotation_order == 'XYZ':
+            # YZ switch (Y <-> Z)
+            temp = rotations[1]
+            rotations[1] = rotations[2]
+            rotations[2] = temp
+
+            # XY switch (X <-> Y)
+            temp = rotations[0]
+            rotations[0] = rotations[1]
+            rotations[1] = temp
+            if(name.startswith("r")):
+                # Y invert (-Y)
+                for frame in rotations[1]:
+                    frame[1] = -float(frame[1])
+                # Z invert (-Z)
+                for frame in rotations[2]:
+                    frame[1] = -float(frame[1])
+
+        elif rotation_order == 'XZY':
+            # XY switch (X <-> Y)
+            temp = rotations[0]
+            rotations[0] =rotations[1]
+            rotations[1] = temp
+
+            # X invert (-X)
+            for frame in rotations[0]:
+                frame[1] = -float(frame[1])
+
+            if(name.startswith("r")):
+                # Y invert (-Y)
+                for frame in rotations[1]:
+                    frame[1] = -float(frame[1])
+                # Z invert (-Z)
+                for frame in rotations[2]:
+                    frame[1] = -float(frame[1])
+
+        elif rotation_order == "YZX":
+        # Bones that are pointed down with YZX order
+        # TODO: remove hardcoding
+            if name in ["hip", "pelvis", "lThighBend", "rThighBend", "lThighTwist", "rThighTwist", "lShin", "rShin"]:
+                # Y invert (-Y)
+                for frame in rotations[1]:
+                    frame[1] = -float(frame[1])
+                # Z invert (-Z)
+                for frame in rotations[2]:
+                    frame[1] = -float(frame[1])
+
+        elif rotation_order == "ZXY":
+            # XY switch (X <-> Y)
+            temp =  rotations[0]
+            rotations[0] = rotations[1]
+            rotations[1] = temp
+
+            # YZ switch (Y <-> Z)
+            temp = rotations[1]
+            rotations[1] = rotations[2]
+            rotations[2] = temp
+
+        elif rotation_order == "ZYX":
+            # YZ switch (Y <-> Z)
+            temp = rotations[1]
+            rotations[1] = rotations[2]
+            rotations[2] = temp
+
+            # X invert (-X)
+            for frame in rotations[0]:
+                frame[1] = -float(frame[1])
+
+        elif rotation_order == "YXZ":
+            return rotations
+        return rotations
+
     
     def get_rotation_order(self,order):
         if order == 'XYZ':
@@ -500,6 +657,7 @@ class Posing:
                 return
             self.fig_object  = bpy.data.objects[self.fig_object_name]
             pbs = self.fig_object.pose.bones
+            armature = self.fig_object
         else:
             pbs = armature.pose.bones
 
@@ -585,6 +743,251 @@ class Posing:
                     action = bpy.data.actions["PoseLib"]
                     action.name = self.fig_object["Asset Name"] + num + " Pose Library"
                     bpy.ops.pose.select_all(action="DESELECT")
+
+        #set mode back
+        Global.setOpsMode("OBJECT")
+
+
+
+    def make_animation(self, use="FIG", armature=None):
+        print("run make_animation")
+        Global.setOpsMode("POSE")
+        bone_limits = self.bone_limits_dict
+        transform_data = self.pose_data_dict
+        if use == "FIG":
+            self.fig_object_name = bpy.context.window_manager.choose_daz_figure
+            if self.fig_object_name == "null":
+                return
+            self.fig_object  = bpy.data.objects[self.fig_object_name]
+            pbs = self.fig_object.pose.bones
+            armature = self.fig_object
+        else:
+            pbs = armature.pose.bones
+
+
+
+
+        # create action
+        actionName = transform_data["Asset Name"]
+        if (actionName is None) or (actionName == ""):
+            actionName = "Daz Pose Animation"
+
+        action = bpy.data.actions.new(actionName)
+        #set fcurve
+        data_path = ""
+        fc = None
+        value = 0.0
+        frames = []
+        frameNum = 0
+        # max frame index
+        maxFrameIndex = 0
+        pb_data = {
+            "Position":[[],[],[]],
+            "Rotation":[[],[],[]],
+        }
+
+
+        for pb in pbs:
+            # ignore high heeled feet
+            if Global.isHighHeel:
+                if pb.name == "lToe" or pb.name == "rToe" or pb.name == "lMetatarsals" or pb.name == "rMetatarsals" or pb.name == "lFoot" or pb.name == "rFoot":
+                    continue
+
+            bname = pb.name
+            order = "YXZ"
+            new_order = self.get_rotation_order(order)
+
+            # reset pb_data
+            pb_data = {
+                "Position":[[],[],[]],
+                "Rotation":[[],[],[]],
+            }
+
+            # set order
+            if pb.name == "root":
+                order = "YXZ"
+                pb.rotation_mode = new_order
+                
+                if "root" in transform_data.keys():
+                    position = transform_data[bname]["Position"]
+                    rotation = transform_data[bname]["Rotation"]
+
+                    pb_data["Position"][0] = position[0]
+                    # Y invert (-Y) and Flip with Z
+                    pb_data["Position"][1] = position[2]
+                    # Z invert (-Z) and Flip with Y
+                    pb_data["Position"][2] = position[1]
+                    
+                    # Rotation
+                    pb_data["Rotation"] = self.reorder_animation_rotation(new_order,rotation,bname)
+                    pbs[bname].rotation_mode = order
+
+            # set order
+            if "Daz Rotation Order" in pb.keys():
+                # print("find Daz Rotation Order in pb.keys")
+                order = pb["Daz Rotation Order"]
+                
+                if bname in transform_data.keys():
+                    position = transform_data[bname]["Position"]
+                    rotation = transform_data[bname]["Rotation"]
+
+                    # Position
+                    pb_data["Position"] = position
+                    
+                    # Rotation
+                    pb_data["Rotation"] = self.reorder_animation_rotation(order,rotation,bname)
+                    pbs[bname].rotation_mode = order
+
+            # set data path
+            loc_data_path='pose.bones["%s"].location'%pb.name
+            rot_data_path='pose.bones["%s"].rotation_euler'%pb.name
+
+            # location
+            for axis in range(3):
+                # get frame list
+                frames = pb_data["Position"][axis]
+                # check frame number
+                frameNum = len(frames)
+                if frameNum == 0:
+                    continue
+
+                fc = action.fcurves.new(loc_data_path, index=axis)
+                fc.keyframe_points.add(frameNum)
+
+                # set frame value to keyframe_points
+                for frame, kfp in zip(frames, fc.keyframe_points):
+                    if pb.name == "root":
+                        if "root" in transform_data.keys():
+                            value = float(frame[1]) * Global.get_size()
+                            #x
+                            if axis == 0:
+                                pass
+                            #y
+                            elif axis == 1:
+                                value = -value
+                            #z
+                            else:
+                                pass
+
+                            if maxFrameIndex < frame[0]:
+                                maxFrameIndex = frame[0]
+
+                            kfp.co = (frame[0], value)
+                            kfp.interpolation = "SINE"
+                            kfp.easing = "EASE_IN_OUT"
+
+                    elif "Daz Rotation Order" in pb.keys():
+                        if bname in transform_data.keys():
+                            # Position
+                            value = float(frame[1])
+
+                            if bname == "hip":
+                                if self.get_offset() != 0:
+                                    if axis == 1:
+                                        value = value - self.get_offset()
+
+                            value = value * Global.get_size()
+
+                            #x
+                            if axis == 0:
+                                pass
+                            # Y invert (-Y)
+                            elif axis == 1:
+                                value = -value
+                            # Z invert (-Z) 
+                            else:
+                                value = -value
+
+                            if maxFrameIndex < frame[0]:
+                                maxFrameIndex = frame[0]
+
+                            kfp.co = (frame[0], value)
+                            kfp.interpolation = "SINE"
+                            kfp.easing = "EASE_IN_OUT"
+                        
+
+
+            # rotation
+            for axis in range(3):
+                # get frame list
+                frames = pb_data["Rotation"][axis]
+                # check frame number
+                frameNum = len(frames)
+                if frameNum == 0:
+                    continue
+
+                fc = action.fcurves.new(rot_data_path, index=axis)
+                fc.keyframe_points.add(frameNum)
+
+                # set frame value to keyframe_points
+                for frame, kfp in zip(frames, fc.keyframe_points):
+                    if pb.name == "root":
+                        if "root" in transform_data.keys():
+                            value = float(frame[1])
+                            value = math.radians(value)
+
+                            if maxFrameIndex < frame[0]:
+                                maxFrameIndex = frame[0]
+
+                            kfp.co = (frame[0], value)
+                            kfp.interpolation = "SINE"
+                            kfp.easing = "EASE_IN_OUT"
+                            
+                    elif "Daz Rotation Order" in pb.keys():
+                        if bname in transform_data.keys():
+                            # Rotation
+                            value = float(frame[1])
+                            value = math.radians(value)
+
+                            if maxFrameIndex < frame[0]:
+                                maxFrameIndex = frame[0]
+
+                            kfp.co = (frame[0], value)
+                            kfp.interpolation = "SINE"
+                            kfp.easing = "EASE_IN_OUT"
+
+            # restore order
+            pbs[bname].rotation_mode = new_order
+
+        # print("transform pose end")
+
+        # bind
+        if armature.animation_data is None:
+            armature.animation_data_create()
+
+        armature.animation_data.action = action
+
+        # set nla
+        if bpy.context.window_manager.put_anim_nla:
+            armature.animation_data.use_nla = True
+            # new track            
+            track = armature.animation_data.nla_tracks.new()
+            # convert action into strip
+            strip = track.strips.new(action.name, action.frame_range[0], action)
+            strip.blend_type = "COMBINE"
+            # action is already in nla_tracks, no need to bind animation_data any more
+            bpy.context.object.animation_data.action = None
+
+        # set timeline
+        if bpy.context.scene.frame_end < maxFrameIndex:
+            bpy.context.scene.frame_end = maxFrameIndex
+
+        # add to pose library
+        # if (bpy.context.window_manager.add_pose_lib):
+        #     if use == "FIG":
+        #         if self.pose_lib_check():
+        #             self.add_pose(transform_data)
+        #             num = ""
+        #             if ".0" in self.fig_object_name:
+        #                 num = " " + self.fig_object_name[-1]
+        #             bpy.ops.pose.select_all(action="SELECT")
+        #             bpy.ops.poselib.pose_add(frame=0, name=str(self.fig_object["Asset Name"] + " Pose"))
+        #             action = bpy.data.actions["PoseLib"]
+        #             action.name = self.fig_object["Asset Name"] + num + " Pose Library"
+        #             bpy.ops.pose.select_all(action="DESELECT")
+
+        #set mode back
+        Global.setOpsMode("OBJECT")
 
         
     def pose_lib_check(self):

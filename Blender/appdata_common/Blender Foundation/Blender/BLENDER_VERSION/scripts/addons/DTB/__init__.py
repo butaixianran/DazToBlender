@@ -1,14 +1,14 @@
 bl_info = {
     "name": "DazToBlender",
     "author": "Daz 3D | https://www.daz3d.com",
-    "version": (2, 4, 0),
-    "blender": (2, 80, 0),
+    "version": (2, 18, 3),
+    "blender": (2, 90, 0),
     "location": "3DView > ToolShelf",
     "description": "Daz 3D Genesis 3/8 transfer to Blender",
     "warning": "",
     "support": "COMMUNITY",
     "wiki_url": "",
-    "tracker_url": "https://github.com/daz3d/DazToBlender/issues",
+    "tracker_url": "https://github.com/butaixianran/DazToBlender/issues",
     "category": "Armature",
 }
 
@@ -270,6 +270,7 @@ classes = (
     DtbPanels.ImportOptionGroup,
     DtbOperators.OP_SAVE_CONFIG,
     DtbOperators.IMP_OT_POSE,
+    DtbOperators.IMP_OT_ANIM,
     DtbOperators.IMP_OT_FBX,
     DtbOperators.IMP_OT_ENV,
     DtbOperators.CLEAR_OT_Pose,

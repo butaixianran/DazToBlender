@@ -525,12 +525,66 @@ class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
         return {"FINISHED"}
 
 
+
+# Start of Animation Classes
+class IMP_OT_ANIM(bpy.types.Operator, ImportHelper):
+    """Imports Daz Poses as animation (.DUF)"""
+
+    bl_idname = "import.animation"
+    bl_label = "Import Animation"
+    bl_options = {"REGISTER", "UNDO"}
+    filename_ext: StringProperty(
+        default=".duf",
+        options={"HIDDEN"},
+    )
+    # filter_glob: StringProperty(
+    #     default="*.duf",
+    #     options={"HIDDEN"},
+    # )
+    files: bpy.props.CollectionProperty(type=DtbProperties.ImportFilesCollection)
+
+    def execute(self, context):
+        # check file ext
+        duf_ext = ".duf"
+        root, ext = os.path.splitext(self.filepath)
+        if ext != duf_ext:
+            if root.endswith(duf_ext):
+                self.filepath = root
+            else:
+                self.filepath = root + ".duf"
+
+        # Instance Classes
+        pose = Poses.Posing("POSE")
+        dirname = os.path.dirname(self.filepath)
+        print("dirname: " + dirname)
+        for i, f in enumerate(self.files, 1):
+            # check file name
+            root, ext = os.path.splitext(f.name)
+            if ext != duf_ext:
+                if root.endswith(duf_ext):
+                    f.name = root
+                else:
+                    f.name = root + ".duf"
+
+            durPath = os.path.join(dirname, f.name)
+            
+            #check file exist
+            if not os.path.isfile(durPath):
+                print("path is not a file: " + durPath)
+                return {"FINISHED"}
+            
+            pose.animation_copy(durPath)
+        return {"FINISHED"}
+
+
 class CLEAR_OT_Pose(bpy.types.Operator):
 
     bl_idname = "my.clear"
     bl_label = "Clear All Pose"
 
     def clear_pose(self):
+        Global.setOpsMode("POSE")
+
         if bpy.context.object is None:
             return
         if (
@@ -545,8 +599,11 @@ class CLEAR_OT_Pose(bpy.types.Operator):
         ):
             for pb in Global.getRgfy().pose.bones:
                 pb.bone.select = True
+
         bpy.ops.pose.transforms_clear()
         bpy.ops.pose.select_all(action="DESELECT")
+
+        Global.setOpsMode("OBJECT")
 
     def execute(self, context):
         self.clear_pose()

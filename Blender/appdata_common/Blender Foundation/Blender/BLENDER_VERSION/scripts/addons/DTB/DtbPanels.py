@@ -282,8 +282,11 @@ class DTB_PT_POSE(View3DPanel, bpy.types.Panel):
         row.prop(w_mgr, "choose_daz_figure", text="")
         row.operator("refresh.alldaz", text="", icon="FILE_REFRESH")
         box.operator("import.pose", icon="POSE_HLT")
+        box.operator("import.animation", icon="POSE_HLT")
         row = box.row(align=True)
         row.prop(w_mgr, "add_pose_lib", text="Add to Pose Library", toggle=False)
+        row = box.row(align=True)
+        row.prop(w_mgr, "put_anim_nla", text="Put Anim as NLA Clip", toggle=False)
 
 
 class DTB_PT_MATERIAL(View3DPanel, bpy.types.Panel):
