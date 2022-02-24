@@ -873,7 +873,7 @@ class Posing:
                                 maxFrameIndex = frame[0]
 
                             kfp.co = (frame[0], value)
-                            kfp.interpolation = "SINE"
+                            kfp.interpolation = "LINEAR"
                             kfp.easing = "EASE_IN_OUT"
 
                     elif "Daz Rotation Order" in pb.keys():
@@ -902,7 +902,7 @@ class Posing:
                                 maxFrameIndex = frame[0]
 
                             kfp.co = (frame[0], value)
-                            kfp.interpolation = "SINE"
+                            kfp.interpolation = "LINEAR"
                             kfp.easing = "EASE_IN_OUT"
                         
 
@@ -930,7 +930,7 @@ class Posing:
                                 maxFrameIndex = frame[0]
 
                             kfp.co = (frame[0], value)
-                            kfp.interpolation = "SINE"
+                            kfp.interpolation = "LINEAR"
                             kfp.easing = "EASE_IN_OUT"
                             
                     elif "Daz Rotation Order" in pb.keys():
@@ -943,7 +943,7 @@ class Posing:
                                 maxFrameIndex = frame[0]
 
                             kfp.co = (frame[0], value)
-                            kfp.interpolation = "SINE"
+                            kfp.interpolation = "LINEAR"
                             kfp.easing = "EASE_IN_OUT"
 
             # restore order
