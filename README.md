@@ -32,7 +32,7 @@
   - Reuse Normal: reuse normal map files, so you do not have to re-converted it.
   - **SSS Rate:** Rate between Principled Subsurface and Daz's Translucency Weight
 
-#### Bug fix
+#### Bug fixed
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Fixed node arranging function for Principled shader
