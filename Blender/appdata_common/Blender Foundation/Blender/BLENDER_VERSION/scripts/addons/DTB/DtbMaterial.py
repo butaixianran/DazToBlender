@@ -998,9 +998,11 @@ class DtbShaders:
                     
                 elif input_key == "Alpha":
                     # alpha texture should already be done, but sometime it put diffuse map to this one
-                    # remove all links
+                    # remove all links and old nodes
                     for link in shader_node.inputs[input_key].links:
+                        from_node = link.from_node
                         mat_links.remove(link)
+                        mat_nodes.remove(from_node)
 
                     # re-create alpha map, the one come already there could be wrong
                     self.set_value_or_tex("Cutout Opacity", mat_nodes, mat_links, shader_node, input_key)
