@@ -524,12 +524,11 @@ class DtbShaders:
             print("can not find: " + property_name)
             return
 
-        if property["Data Type"] == "Double":
-            shader_node.inputs[input_key].default_value = property["Value"]
-        elif len(property["Texture"])>0:
+        if len(property["Texture"])>0:
             tex_path = property["Texture"]
             self.set_tex_node(tex_path, property_name, mat_nodes, mat_links, shader_node, input_key)
-
+        elif property["Data Type"] == "Double":
+            shader_node.inputs[input_key].default_value = property["Value"]
 
     #set color or add texture node
     def set_color_or_tex(self, property_name, mat_nodes, mat_links, shader_node, input_key):
@@ -998,12 +997,27 @@ class DtbShaders:
                     shader_node.inputs[input_key].default_value = luminance_value/50000
                     
                 elif input_key == "Alpha":
-                    #alpha texture should already be done
-                    # but need to set texture type to non-color
+                    # alpha texture should already be done, but sometime it put diffuse map to this one
+                    # remove all links
                     for link in shader_node.inputs[input_key].links:
-                        alpha_texture = link.from_node
-                        if alpha_texture.bl_idname == "ShaderNodeTexImage":
-                            Versions.to_color_space_non(alpha_texture)
+                        mat_links.remove(link)
+
+                    # re-create alpha map, the one come already there could be wrong
+                    self.set_value_or_tex("Cutout Opacity", mat_nodes, mat_links, shader_node, input_key)
+
+                    # re-set value for transmission
+                    Cutout_Opacity = self.mat_property_dict.get("Cutout Opacity")
+                    Refraction_Weight = self.mat_property_dict.get("Refraction Weight")
+                    if Refraction_Weight["Value"] > 0 and Cutout_Opacity["Texture"] == "":
+                        if shader_node.inputs[input_key].default_value > 0.3:
+                            shader_node.inputs[input_key].default_value = 0.3
+                            mat.blend_method = 'HASHED'
+
+                    # need to set texture type to non-color
+                    # for link in shader_node.inputs[input_key].links:
+                    #     alpha_texture = link.from_node
+                    #     if alpha_texture.bl_idname == "ShaderNodeTexImage":
+                    #         Versions.to_color_space_non(alpha_texture)
 
                 elif input_key == "Normal":
                     # check both normal and bump texture

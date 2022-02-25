@@ -245,7 +245,6 @@ class IMP_OT_FBX(bpy.types.Operator):
             drb.unwrapuv()
             Global.deselect()
 
-
             # now, we have every material, and a Principled BSDF node in every material
             # Also, basic color map is linked to Principled BSDF node, a Normal/Map node is created
             # notice, blender use "Normal Map" node, so this "Normal/Map" node, is actually wrong.
