@@ -599,6 +599,20 @@ class DtbShaders:
             mat_nodes = mat.node_tree.nodes
             mat_links = mat.node_tree.links
 
+            # change viewport display
+            mat.metallic = 0
+            # set viewport display color
+            # set eyeball to black
+            if "Irises" in mat_name:
+                mat.diffuse_color = (0,0,0,1)
+            elif "Pupils" in mat_name:
+                mat.diffuse_color = (0,0,0,1)
+            elif "Cornea" in mat_name:
+                mat.diffuse_color = (0,0,0,0)
+            elif "_Lips" in mat_name:
+                mat.diffuse_color = (1, 0.8, 0.8, 1)
+            elif "Eyelashes" in mat_name:
+                mat.diffuse_color = (0,0,0,0.5)
 
             # map iray shader to Principled BSDF shader from here
             

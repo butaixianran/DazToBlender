@@ -179,7 +179,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             bpy.context.preferences.inputs.use_mouse_depth_navigate = True
             # bpy.context.scene.render.engine = "CYCLES"
             bpy.context.space_data.shading.type = "SOLID"
-            bpy.context.space_data.shading.color_type = "OBJECT"
+            bpy.context.space_data.shading.color_type = "MATERIAL"
             bpy.context.space_data.shading.show_shadows = False
         Versions.set_english()
         bco = bpy.context.object

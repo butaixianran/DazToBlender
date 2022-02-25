@@ -70,7 +70,7 @@ class EnvProp:
     def set_default_settings(self):
         # bpy.context.scene.render.engine = 'CYCLES'
         bpy.context.space_data.shading.type = 'SOLID'
-        bpy.context.space_data.shading.color_type = 'OBJECT'
+        bpy.context.space_data.shading.color_type = 'MATERIAL'
         bpy.context.space_data.shading.show_shadows = False
         bco = bpy.context.object
         if bco != None and bco.mode != 'OBJECT':

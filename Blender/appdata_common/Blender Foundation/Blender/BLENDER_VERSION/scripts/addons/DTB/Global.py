@@ -13,7 +13,10 @@ bRotationLimit = False
 bLimitOnTwist = True
 bUseCustomBone = False
 bUseDrivers = False
+
+# not used
 bRemoveShapeKeyDrivers = False
+
 bJoinEyelashToBody = True
 bConvertBumpToNormal = False
 bReuseNormal = True
