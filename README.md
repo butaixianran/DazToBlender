@@ -13,11 +13,11 @@
 * **Importing Pose by selecting Tip Image file**
 * **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
 * **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
-* Try to set position and rotation for env props like lights.
 * **Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures from blender.**
-* Calculate Dual Lobe Specular as it should be, to convert a better Specular and Roughness value.
-* **Convert Bump to Normal Map if you want**
-* **A lot of new options for importing:**  
+* **Convert Bump to Normal Map when importing, if you want**
+* **Set position and rotation for env props like lights.**
+
+#### New options for importing:**  
   - Use Principled shader: Uncheck to use iray shader
   - **High Heel: check to ignore feet rotation for high heel, also works when importing pose.**
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. 
