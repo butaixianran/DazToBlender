@@ -10,7 +10,7 @@
 
 ### Blender Addon
 #### New Feature
-* **Handle High heel when importing mode or a pose file**
+* **Handle High heel when importing figure or a pose file**
 * **Importing Pose by selecting Tip Image file**
 * **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
 * **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
