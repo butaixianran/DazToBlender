@@ -494,11 +494,16 @@ class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
     def execute(self, context):
         # check file ext
         duf_ext = ".duf"
+        tip_ext = ".tip"
         root, ext = os.path.splitext(self.filepath)
         if ext != duf_ext:
             if root.endswith(duf_ext):
                 self.filepath = root
             else:
+                # remove tip
+                if root.endswith(tip_ext):
+                    root = root[:-4]
+
                 self.filepath = root + ".duf"
 
         # Instance Classes
@@ -512,6 +517,10 @@ class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
                 if root.endswith(duf_ext):
                     f.name = root
                 else:
+                    # remove tip
+                    if root.endswith(tip_ext):
+                        root = root[:-4]
+
                     f.name = root + ".duf"
 
             durPath = os.path.join(dirname, f.name)
