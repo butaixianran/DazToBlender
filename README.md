@@ -6,10 +6,11 @@
 
 ## Updated Feature:
 ### Daz Script
-* Handle high heel. (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
+* **Handle high heel.** (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
 
 ### Blender Addon
 #### New Feature
+* **Handle High heel when importing mode or a pose file**
 * **Importing Pose by selecting Tip Image file**
 * **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
 * **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
@@ -32,6 +33,7 @@
 * Fixed issues by blender 3.0 break change  
 * Fixed a big issue when importing pose. Now you can import poses without problem
 * Fixed node arranging function for Principled shader
+* Fix high heel issues on both Blender and Daz sides.
 
 ## Notice
 ### EyeClosed shape key
