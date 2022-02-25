@@ -134,14 +134,22 @@ def bumpToNormal(bump_path, normal_path, normal_name, file_format, max_size):
     np_normal = heightMapToNormalMap(src_image)
 
     # create normalMap file
-    normal_image = bpy.data.images.new(normal_name, width=src_image.size[0], height=src_image.size[1], alpha=True, is_data=True)
+    normal_image = bpy.data.images.new(normal_name, width=src_image.size[0], height=src_image.size[1], is_data=True)
+    
     normal_image.file_format = file_format
+    
     normal_image.filepath = normal_path
     # set pixels
     normal_image.pixels = np_normal.ravel()
     # save image
-    normal_image.save()
-
+    # image.save() will ignore any format setting, it always save as PNG
+    # so, to use JPEG format, we need to use image.save_render(filepaht)
+    render_format = bpy.context.scene.render.image_settings.file_format
+    # set render's file format
+    bpy.context.scene.render.image_settings.file_format = file_format
+    normal_image.save_render(normal_path)
+    #restore render's file format
+    bpy.context.scene.render.image_settings.file_format = render_format
 
     return True
 
@@ -190,6 +198,8 @@ def bumpToNormalAuto(bump_path, max_size, reuse):
         file_format = "TARGA"
     elif ext in BLENDER_IMAGE_FORMAT:
         file_format = ext
+    
+    print("normal file format: "+ file_format)
 
     if reuse:
         # check if normal_path exist
