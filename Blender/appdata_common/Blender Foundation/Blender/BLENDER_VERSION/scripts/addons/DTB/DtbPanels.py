@@ -69,6 +69,14 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bConvertBumpToNormal
     )
 
+
+    bReuseNormal: bpy.props.BoolProperty(
+        name="Reuse Normal",
+        description="Reuse existed Normal Map file",
+        default = Global.bReuseNormal
+    )
+
+
     bUseDrivers : bpy.props.BoolProperty(
         name="Use Drivers",
         description="Check to use drivers for shape key",
@@ -124,6 +132,9 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
         l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
+        if dtbImportOptGroup.bConvertBumpToNormal:
+            l.prop(dtbImportOptGroup, "bReuseNormal")
+
         l.prop(dtbImportOptGroup, "sss_rate")
 
         if context.object and context.active_object:
@@ -203,6 +214,8 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
             Global.bLimitOnTwist = dtbImportOptGroup.bLimitOnTwist
             Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
+            Global.bReuseNormal = dtbImportOptGroup.bReuseNormal
+            
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
             Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers

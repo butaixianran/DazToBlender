@@ -104,12 +104,31 @@ def heightMapToNormalMap(src_image):
 # if ok, return True, else return False
 # if normal file exist, it will rewrite it
 # blender's image format: https://docs.blender.org/api/current/bpy.types.Image.html#bpy.types.Image.file_format
-def bumpToNormal(bump_path, normal_path, normal_name, file_format):
+# reuse: bool, if true, and file already exist, it will use it. If false, it will rewrite normal map
+# max_size is the max width  or height, set to zero to ignore size
+def bumpToNormal(bump_path, normal_path, normal_name, file_format, max_size):
     src_image = bpy.data.images.load(bump_path)
 
     if src_image is None:
         print("can not find bump file: " + bump_path)
         return False
+
+    # resize
+    # ignore size if max_size is 0
+    if max_size > 0:
+        width = src_image.size[0]
+        height = src_image.size[1]
+        max_length = height
+
+        if width > height:
+            max_length = width
+        
+        if max_length > max_size:
+            resize_rate = max_size/max_length
+            width = width * resize_rate
+            height = height * resize_rate
+
+            src_image.scale(width, height)
 
     # np_normal is a ndarray
     np_normal = heightMapToNormalMap(src_image)
@@ -123,16 +142,13 @@ def bumpToNormal(bump_path, normal_path, normal_name, file_format):
     # save image
     normal_image.save()
 
+
     return True
 
 
-# this will create a normal map into the folder of bump map
-# use the same file type as bump map
-# and named it as: bumpFileName_normal
-# if file already exist, it will rewrite it
-# return the new normal map's path
-# if failed, return empty string
-def bumpToNormalAuto(bump_path):
+# convert bump_path to normal map path
+# return normal_path, normal_name and ext
+def getNormalPath(bump_path):
     if not os.path.isfile(bump_path):
         print("bump_path is not a file: " + bump_path)
         return ""
@@ -148,6 +164,22 @@ def bumpToNormalAuto(bump_path):
     normal_name = bumpFileName+"_normal"+"."+ext
     normal_path = dir + "/" + normal_name
 
+    return normal_path, normal_name, ext
+
+# this will create a normal map into the folder of bump map
+# use the same file type as bump map
+# and named it as: bumpFileName_normal
+# reuse: bool, if true, and file already exist, it will use it. If false, it will rewrite normal map
+# max_size is the max width or height, set to zero to ignore size
+# return the new normal map's path
+# if failed, return empty string
+def bumpToNormalAuto(bump_path, max_size, reuse):
+    if not os.path.isfile(bump_path):
+        print("bump_path is not a file: " + bump_path)
+        return ""
+
+    normal_path, normal_name, ext = getNormalPath(bump_path)
+
     # blender's file format:
     # https://docs.blender.org/api/current/bpy.types.Image.html#bpy.types.Image.file_format
     file_format = "PNG"
@@ -159,7 +191,13 @@ def bumpToNormalAuto(bump_path):
     elif ext in BLENDER_IMAGE_FORMAT:
         file_format = ext
 
-    if bumpToNormal(bump_path, normal_path, normal_name, file_format):
+    if reuse:
+        # check if normal_path exist
+        if os.path.isfile(normal_path):
+            # reuse it
+            return normal_path
+
+    if bumpToNormal(bump_path, normal_path, normal_name, file_format, max_size):
         return normal_path
     else:
         return ""

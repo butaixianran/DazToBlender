@@ -1003,20 +1003,37 @@ class DtbShaders:
 
                     if len(Bump_Strength["Texture"])>0:
                         if Global.bConvertBumpToNormal and Normal_Map["Texture"] == "":
+                            # check if normal file is already exist
+                            normal_path, normal_name, _ = BumpToNormal.getNormalPath(Bump_Strength["Texture"])
+
+                            need_convert = True
+                            # reuse normal map file
+                            if Global.bReuseNormal:
+                                if os.path.isfile(normal_path):
+                                    need_convert = False
+
+                            # only convert bump to normal if normal map is not existed in blender's image list
+                            normalImage = bpy.data.images.get(normal_name)
+                            if os.path.isfile(normal_path) and normalImage is not None:
+                                need_convert = False
                             # convert bump map into normal map
                             # put it into the same folder of bump map
                             # use name as: bumFileName_normal
                             # use the same file type as bump map
                             # and get the normal file's path
-                            normal_path = BumpToNormal.bumpToNormalAuto(Bump_Strength["Texture"])
+                            # also make max image size to 2048
+                            if need_convert:
+                                print("convert bump to normal for mat: " + mat_name)
+                                normal_path = BumpToNormal.bumpToNormalAuto(Bump_Strength["Texture"], 2048, False)
 
                             if normal_path != "":
-                               # create node for this normal map
-                               # get Normal Map node:
-                               self.set_tex_node(normal_path, "Normal Map", mat_nodes, mat_links, normal_node, "Color")
-                               normal_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.5
+                                # create node for this normal map
+                                # get Normal Map node:
+                                self.set_tex_node(normal_path, "Normal Map", mat_nodes, mat_links, normal_node, "Color")
+                                normal_node.inputs["Strength"].default_value = Bump_Strength["Value"]*0.5
                             else:
                                 print("convert bump to normal failed")
+
                         else:
                             # add Bump node
                             bump_node = mat_nodes.new("ShaderNodeBump")
