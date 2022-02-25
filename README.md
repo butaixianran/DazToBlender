@@ -24,7 +24,7 @@
   - **Keep Limit on Twist Bone:** check to keep twist bone's rotation limit, but turn off other bones' limit
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
-  - Convert Bump map into Normal map: It is slow, and converted Normal map file size is big. But you only need to do it once if bump map is not changed.
+  - **Convert Bump to Normal**: It is slow, and converted Normal map file size is big. But you only need to do it once if bump map is not changed.
   - Reuse Normal: reuse normal map files, so you do not have to re-converted it.
   - **SSS Rate:** Rate between Principled Subsurface and Daz's Translucency Weight
 
