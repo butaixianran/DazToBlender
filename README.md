@@ -4,6 +4,9 @@
 
 **This updated version allow you to export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools. So you do not need any other bridge any more.**    
 
+#### Version
+2.20.5
+
 ## Updated Feature:
 ### Daz Script
 * **Handle high heel.** (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
