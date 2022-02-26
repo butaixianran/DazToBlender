@@ -51,7 +51,7 @@ Then you can see your model more clearly. You can alwasy change SSS Rate on the 
 ### Convert Bump Map to Normal Map
 This process is purely done in blender without installing any third party package. So it is slow.  
 
-But, you can resue it if bump file is not changed, so you only need to do it once.  
+But, you can reuse it if bump file is not changed, so you only need to do it once.  
 
 This converted normal map file will be save to:`/bump_file_path/bump_file_name_normal.ext`, ext will be same as bump file.  
 
