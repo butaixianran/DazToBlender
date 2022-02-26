@@ -13,6 +13,8 @@ bRotationLimit = False
 bLimitOnTwist = True
 bUseCustomBone = False
 bUseDrivers = False
+#remove shape key from all wearable things, not just cloth
+bRemoveShapeKeyFromWearable = True
 
 # not used
 bRemoveShapeKeyDrivers = False

@@ -355,7 +355,46 @@ class IMP_OT_FBX(bpy.types.Operator):
             DtbIKBones.ik_access_ban = False
             if bpy.context.window_manager.morph_prefix:
                 bpy.ops.rename.morphs('EXEC_DEFAULT')
-            self.report({"INFO"}, "Success")
+
+            # Join Eyelashes into body
+            if Global.bJoinEyelashToBody:
+                Global.deselect()
+                # get mesh name
+                findEyelash = False
+                for ob in bpy.context.scene.objects:
+                    if ob.type == 'MESH':
+                        findEyelash = Global.find_EYLS(ob)
+
+                print("findEyelash: " + str(findEyelash))
+
+                eyelashName = Global.get_Eyls_name()
+                bodyName = Global.get_Body_name()
+                print("eyelashName: " + eyelashName)
+                print("bodyName: " + bodyName)
+
+                if eyelashName != "" and bodyName != "":
+                    # select meshes
+                    bpy.data.objects[bodyName].select_set(True)
+                    bpy.data.objects[eyelashName].select_set(True)
+                    # set eyelash mesh as active
+                    # 2.8 new api
+                    bpy.context.view_layer.objects.active = bpy.data.objects[bodyName]
+                    # join into one
+                    bpy.ops.object.join()
+                    # Clear eyelash's name
+                    Global.setEylsIsJoined()
+
+                Global.deselect()
+
+            # Remove shapekeys from cloth and hair
+            if Global.bRemoveShapeKeyFromWearable:
+                bodyName = Global.get_Body_name()
+                if bodyName != "":
+                    # remove shape keys from other mesh
+                    for obj in Util.myacobjs():
+                        if obj.type == "MESH" and obj.name != bodyName:
+                            obj.shape_key_clear()
+
 
             #turn off limits
             if not Global.bRotationLimit:
@@ -370,38 +409,12 @@ class IMP_OT_FBX(bpy.types.Operator):
                     for con in bone.constraints:
                         con.mute = True
 
+
+            self.report({"INFO"}, "Success")
+
         else:
             self.show_error()
 
-        # Join Eyelashes into body
-        if Global.bJoinEyelashToBody:
-            Global.deselect()
-            # get mesh name
-            findEyelash = False
-            for ob in bpy.context.scene.objects:
-                if ob.type == 'MESH':
-                    findEyelash = Global.find_EYLS(ob)
-
-            print("findEyelash: " + str(findEyelash))
-
-            eyelashName = Global.get_Eyls_name()
-            bodyName = Global.get_Body_name()
-            print("eyelashName: " + eyelashName)
-            print("bodyName: " + bodyName)
-
-            if eyelashName != "" and bodyName != "":
-                # select meshes
-                bpy.data.objects[bodyName].select_set(True)
-                bpy.data.objects[eyelashName].select_set(True)
-                # set eyelash mesh as active
-                # 2.8 new api
-                bpy.context.view_layer.objects.active = bpy.data.objects[bodyName]
-                # join into one
-                bpy.ops.object.join()
-                # Clear eyelash's name
-                Global.setEylsIsJoined()
-
-            Global.deselect()
 
         # Remove shapekey drivers
         if Global.bRemoveShapeKeyDrivers:

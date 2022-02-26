@@ -82,7 +82,13 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         description="Check to use drivers for shape key",
         default = Global.bUseDrivers
     )
-    
+
+    bRemoveShapeKeyFromWearable : bpy.props.BoolProperty(
+        name="Clear Cloth Morph",
+        description="Remove morphs from all wearables",
+        default = Global.bRemoveShapeKeyFromWearable
+    )
+
     bRemoveShapeKeyDrivers : bpy.props.BoolProperty(
         name="Remove Shape Key Drivers",
         description="Check to Remove Shape Key Drivers when importing",
@@ -131,6 +137,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
 
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
+        l.prop(dtbImportOptGroup, "bRemoveShapeKeyFromWearable")
         l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
         if dtbImportOptGroup.bConvertBumpToNormal:
             l.prop(dtbImportOptGroup, "bReuseNormal")
@@ -218,6 +225,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             
             Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
             Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
+            Global.bRemoveShapeKeyFromWearable = dtbImportOptGroup.bRemoveShapeKeyFromWearable
             Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
             Global.sss_rate = dtbImportOptGroup.sss_rate
 
