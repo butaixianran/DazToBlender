@@ -5,7 +5,7 @@
 **It will export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools. So you do not need any other bridge any more.**    
 
 #### Version
-2.20.5
+2.21.5
 
 ## Updated Feature:
 ### Daz Script
@@ -28,6 +28,7 @@
   - **Keep Limit on Twist Bone:** check to keep twist bone's rotation limit, but turn off other bones' limit
   - Custom Shape: Check to use custom shapes for bones
   - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
+  - **Clear Morph on Clothes**: it clears morphs on all wearable objects. So you won't have something like facial morphs on clothes.
   - **Convert Bump to Normal**: It is slow, but you only need to do it once if bump map is not changed.
   - Reuse Normal: reuse normal map files, so you do not have to re-converted it.
   - **SSS Rate:** Rate between Principled Subsurface and Daz's Translucency Weight
