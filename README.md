@@ -40,6 +40,23 @@
 * Fix high heel issues on both Blender and Daz sides.
 
 ## Notice
+### You Need to Refresh Daz Model List after re-open your scene
+When you want to apply pose, animation or use shape key drivers. This addon need to know which Daz model you want to apply with.  
+
+**It is not based on which armature you select. It is based on which Daz model you choose on this addon's panel. There is a Daz model list on the panel.**  
+
+When you re-open your scene, you need to click the refresh button on addon panel, it will scan all Daz model in the scene.  
+![](img/refresh.jpg)  
+
+Now you have a list of Daz models in this scene.  
+![](img/list.jpg)  
+
+Choose the one you want to use. Then shape key drivers will show up, also you can apply pose or animation to it now.  
+![](img/morphs.jpg)  
+
+This is how this official bridge works, I just leave it that way.  
+
+
 ### EyeClosed shape key
 Be noticed, EyeClosed shape key is not a real shape key, it is a driver of EyeClosedL and EyeClosedR. If you don't use drivers, EyeClosed shape key won't work, you need to set EyeClosedL and EyeClosedR directly.  
 
