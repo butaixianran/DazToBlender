@@ -21,6 +21,11 @@
 * **Convert Bump to Normal Map when importing, if you want**
 * **Set position and rotation for env props like lights.**
 
+### AO Map
+For game engine, AO map is still important. But Daz Character is using UDIM UV, it is a tiled UV, which blender can not bake AO for that. So, I baked it for you with python script, you can get it from "AO" folder of this project.   
+
+This AO can be used on all Genesis 8 character, no matter how they looks.  
+
 #### New options for importing:**  
   - Use Principled shader: Uncheck to use iray shader
   - **High Heel: check to ignore feet rotation for high heel, also works when importing pose.**
