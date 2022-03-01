@@ -43,6 +43,13 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.isHighHeel
     )
 
+
+    bJoinEyelashToBody : bpy.props.BoolProperty(
+        name="Join Eyelash To Body",
+        description="Join Eyelash To Body",
+        default = Global.bJoinEyelashToBody
+    )
+
     bRotationLimit : bpy.props.BoolProperty(
         name="Rotation Limit",
         description="Uncheck to turn off Rotation Limit",
@@ -130,6 +137,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         dtbImportOptGroup = context.scene.dtbImportOptGroup
         l.prop(dtbImportOptGroup, "bUsePrincipledMat")
         l.prop(dtbImportOptGroup, "isHighHeel")
+        l.prop(dtbImportOptGroup, "bJoinEyelashToBody")
         l.prop(dtbImportOptGroup, "bRotationLimit")
 
         if not dtbImportOptGroup.bRotationLimit:
@@ -218,6 +226,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             # set import option
             Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
             Global.isHighHeel = dtbImportOptGroup.isHighHeel
+            Global.bJoinEyelashToBody = dtbImportOptGroup.bJoinEyelashToBody
             Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
             Global.bLimitOnTwist = dtbImportOptGroup.bLimitOnTwist
             Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal

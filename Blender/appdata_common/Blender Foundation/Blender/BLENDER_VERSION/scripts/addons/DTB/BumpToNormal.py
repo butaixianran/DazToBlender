@@ -1,9 +1,7 @@
 # this blender script will create a normal map from bump map
 # reference: https://gist.github.com/Huud/63bacf5b8fe9b7b205ee42a786f922f0
 #
-# This conversion is very very slow and there is no api to compress image file
-# So converted normal map file will be ver big
-# a bump map with 1mb, gonna converted into a normal map with 13-18mb
+# This conversion is very slow. So you better reuse the normal map you already has
 import bpy
 import os
 import numpy as np

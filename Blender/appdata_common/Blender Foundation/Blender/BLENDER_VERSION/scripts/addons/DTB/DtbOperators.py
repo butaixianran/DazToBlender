@@ -391,8 +391,9 @@ class IMP_OT_FBX(bpy.types.Operator):
                 bodyName = Global.get_Body_name()
                 if bodyName != "":
                     # remove shape keys from other mesh
+                    # but ignore eyelashes
                     for obj in Util.myacobjs():
-                        if obj.type == "MESH" and obj.name != bodyName:
+                        if obj.type == "MESH" and obj.name != bodyName and (not "Eyelashes" in obj.name):
                             obj.shape_key_clear()
 
 
