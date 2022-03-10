@@ -24,7 +24,7 @@
 ### AO Map
 For game engine, AO map is still important. But Daz Character is using UDIM UV, it is a tiled UV, which blender can not bake AO for that. So, I baked it for you with python script, you can get it from "AO" folder of this project.   
 
-This AO can be used on all Genesis 8 character, no matter how they looks.  
+This AO can be used on all Genesis 8 characters, no matter how they look.  
 
 #### New options for importing:**  
   - Use Principled shader: Uncheck to use iray shader
