@@ -26,7 +26,7 @@ For game engine, AO map is still important. But Daz Character is using UDIM UV, 
 
 This AO can be used on all Genesis 8 characters, no matter how they look.  
 
-#### New options for importing:**  
+#### New options for importing:  
   - Use Principled shader: Uncheck to use iray shader
   - **High Heel: check to ignore feet rotation for high heel, also works when importing pose.**
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. 
