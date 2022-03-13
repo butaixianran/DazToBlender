@@ -963,7 +963,7 @@ class Posing:
             # new track            
             track = armature.animation_data.nla_tracks.new()
             # convert action into strip
-            strip = track.strips.new(action.name, action.frame_range[0], action)
+            strip = track.strips.new(action.name, int(action.frame_range[0]), action)
             strip.blend_type = "COMBINE"
             # action is already in nla_tracks, no need to bind animation_data any more
             bpy.context.object.animation_data.action = None
