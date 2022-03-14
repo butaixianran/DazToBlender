@@ -618,7 +618,17 @@ class DtbShaders:
             # find Principled BSDF shader node
             shader_node = mat_nodes.get("Principled BSDF")
 
-            if shader_node == None:
+            # find Principled BSDF by bl_idname
+            if shader_node is None:
+                for node in mat_nodes:
+                    if node.bl_idname == "ShaderNodeBsdfPrincipled":
+                        shader_node = node
+            
+            # if still no shader node, then create one
+            if shader_node is None:
+                shader_node = mat_nodes.new("ShaderNodeBsdfPrincipled")
+
+            if shader_node is None:
                 print("can not find Principled BSDF node for mat: " + mat.name)
                 # do not create a new Principled BSDF, so we can see what may be wrong from shader editor
                 # make it easier to fix bugs
@@ -633,10 +643,20 @@ class DtbShaders:
 
             # find "Normal Map" node
             normal_node = mat_nodes.get("Normal Map")
-            if not normal_node is None:
+            if normal_node is not None:
                 # change label "Normal/Map" to "Normal Map"
                 # there is no such name as "Normal/Map" in blender
                 normal_node.label = "Normal Map"
+
+            # find normal node by bl_idname
+            if normal_node is None:
+                for node in mat_nodes:
+                    if node.bl_idname == "ShaderNodeNormalMap":
+                        normal_node = node
+            
+            # if still no normal node, then create one
+            if normal_node is None:
+                normal_node = mat_nodes.new("ShaderNodeNormalMap")
 
             # map iray material to blender
             # iray mat's Properties looks like this:
