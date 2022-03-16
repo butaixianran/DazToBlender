@@ -721,12 +721,6 @@ class DtbShaders:
                     # Base_Color_Effect values: Scatter Only(0), Scatter & Transmit(1)，Scatter & Transmit Intensity(2)
                     Base_Color_Effect = self.mat_property_dict.get("Base Color Effect")
                     
-
-                    if Base_Color_Effect is None:
-                        # try another name: Glossy Color Effect
-                        Base_Color_Effect = self.mat_property_dict.get("Glossy Color Effect")
-
-
                     if Base_Color_Effect is not None:
                         if Base_Color_Effect["Value"] != 0:
                             SSS_Reflectance_Tint = self.mat_property_dict.get("SSS Reflectance Tint")
