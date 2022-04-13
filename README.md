@@ -5,7 +5,7 @@
 **It will export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools. So you do not need any other bridge any more.**    
 
 #### Version
-2.23.7
+2.24.7
 
 ## Updated Feature:
 ### Daz Script
