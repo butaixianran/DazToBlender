@@ -731,15 +731,28 @@ class Posing:
                     pbs[bname].rotation_mode = new_order
 
         # print("transform pose end")
+        # print("add to pose lib")
+        # print("use:")
+        # print(use)
+        # print("pose_lib_check")
+        # print(self.pose_lib_check())
+
         if (bpy.context.window_manager.add_pose_lib):
             if use == "FIG":
                 if self.pose_lib_check():
                     self.add_pose(transform_data)
+                else:
                     num = ""
                     if ".0" in self.fig_object_name:
                         num = " " + self.fig_object_name[-1]
                     bpy.ops.pose.select_all(action="SELECT")
-                    bpy.ops.poselib.pose_add(frame=0, name=str(self.fig_object["Asset Name"] + " Pose"))
+
+                    pose_name = str(self.fig_object["Asset Name"] + " Pose")
+
+                    if "Asset Name" in transform_data.keys():
+                        pose_name = transform_data["Asset Name"]                    
+
+                    bpy.ops.poselib.pose_add(frame=0, name=pose_name)
                     action = bpy.data.actions["PoseLib"]
                     action.name = self.fig_object["Asset Name"] + num + " Pose Library"
                     bpy.ops.pose.select_all(action="DESELECT")
@@ -989,6 +1002,8 @@ class Posing:
         #set mode back
         Global.setOpsMode("OBJECT")
 
+
+
         
     def pose_lib_check(self):
         if ".0" in self.fig_object_name:
@@ -996,10 +1011,15 @@ class Posing:
             name = self.fig_object["Asset Name"] + num + " Pose Library"
         else:
             name = self.fig_object["Asset Name"] + " Pose Library"
+
+        # print("name:")
+        # print(name)
+
         if name in bpy.data.actions.keys():  
             return True
 
-    
+
+
     # Add Pose to Library
     def add_pose(self,transform_data):
         if ".0" in self.fig_object_name:
