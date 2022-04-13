@@ -737,6 +737,9 @@ class Posing:
         # print("pose_lib_check")
         # print(self.pose_lib_check())
 
+        #set num poses to 0 
+        num_poses = 0
+        
         if (bpy.context.window_manager.add_pose_lib):
             if use == "FIG":
                 if self.pose_lib_check():
@@ -745,14 +748,15 @@ class Posing:
                     num = ""
                     if ".0" in self.fig_object_name:
                         num = " " + self.fig_object_name[-1]
-                    bpy.ops.pose.select_all(action="SELECT")
+                    bpy.ops.pose.select_all(action="TOGGLE")
 
                     pose_name = str(self.fig_object["Asset Name"] + " Pose")
 
                     if "Asset Name" in transform_data.keys():
-                        pose_name = transform_data["Asset Name"]                    
-
-                    bpy.ops.poselib.pose_add(frame=0, name=pose_name)
+                        pose_name = transform_data["Asset Name"]
+                                   
+                    #add 1+num_poses every the user import a new pose
+                    bpy.ops.poselib.pose_add(frame=1+num_poses, name=pose_name)
                     action = bpy.data.actions["PoseLib"]
                     action.name = self.fig_object["Asset Name"] + num + " Pose Library"
                     bpy.ops.pose.select_all(action="DESELECT")
