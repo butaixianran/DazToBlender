@@ -1,4 +1,4 @@
-# Daz To Blender For Blender 3.X
+# Daz To Blender Bridge For Blender 3.X
 
 **This fork did some really good updates, it comes with 14 new features and 3 bug fixing.**  
 
