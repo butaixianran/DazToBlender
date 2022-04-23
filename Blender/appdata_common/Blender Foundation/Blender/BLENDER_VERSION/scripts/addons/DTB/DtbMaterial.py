@@ -1130,5 +1130,9 @@ class DtbShaders:
             if shader_node.inputs["Alpha"].default_value < 1 or len(Cutout_Opacity["Texture"])>0:
                 mat.blend_method = 'HASHED'
 
+            # Set BLEND to HASHED
+            if mat.blend_method == 'BLEND':
+                mat.blend_method = 'HASHED'
+
             if mat_nodes is not None:
                 NodeArrange.toNodeArrange(mat_nodes)
