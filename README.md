@@ -1,6 +1,6 @@
-# Daz To Blender 3.0 fixed version
+# Daz To Blender For Blender 3.X
 
-**This fork did some really good updates, it comes with 14 new features and 3 bug fixing, give it a try.**  
+**This fork did some really good updates, it comes with 14 new features and 3 bug fixing.**  
 
 **It will export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools. So you do not need any other bridge any more.**    
 
