@@ -818,7 +818,9 @@ class Posing:
 
             # set order
             if pb.name == "root":
+                bname = pb.name
                 order = "YXZ"
+                new_order = self.get_rotation_order(order)
                 pb.rotation_mode = new_order
                 
                 if "root" in transform_data.keys():
@@ -839,6 +841,8 @@ class Posing:
             if "Daz Rotation Order" in pb.keys():
                 # print("find Daz Rotation Order in pb.keys")
                 order = pb["Daz Rotation Order"]
+                bname = pb.name
+                new_order = self.get_rotation_order(order)
                 
                 if bname in transform_data.keys():
                     position = transform_data[bname]["Position"]
@@ -958,6 +962,12 @@ class Posing:
                             kfp.co = (frame[0], value)
                             kfp.interpolation = "LINEAR"
                             kfp.easing = "EASE_IN_OUT"
+
+
+            # debug
+            # if bname == "hip":
+            #     print("rotation_mode: " + pbs[bname].rotation_mode)
+            #     print("new_order: " + new_order)
 
             # restore order
             pbs[bname].rotation_mode = new_order
