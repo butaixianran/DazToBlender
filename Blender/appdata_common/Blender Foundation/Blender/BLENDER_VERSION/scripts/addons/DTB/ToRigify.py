@@ -101,7 +101,7 @@ class ToRigify:
             return
         Global.convert_vgroups()  # Updates VertexGroups
         if len(Global.get_bone_limit()) == 0:  # Seems not Necessary
-            Global.bone_limit_modify()
+            Global.bone_limit_modify(None)
         wm.progress_update(5)
         dobj = Global.getAmtr()
         Versions.select(dobj, True)
@@ -235,10 +235,16 @@ class ToRigify:
                     find = False
                     if "Toe" in eb.name:
                         if eb.name.startswith("r"):
-                            eb.parent = robj.data.edit_bones["toe.R"]
+                            eb.parent = robj.data.edit_bones.get("toe.R")
+                            if eb.parent is None:
+                                eb.parent = robj.data.edit_bones.get("toe_fk.R")
+
                             self.to_layer(eb, 18)
                         else:
-                            eb.parent = robj.data.edit_bones["toe.L"]
+                            eb.parent = robj.data.edit_bones.get("toe.L")
+                            if eb.parent is None:
+                                eb.parent = robj.data.edit_bones.get("toe_fk.L")
+
                             self.to_layer(eb, 15)
                         find = True
                     else:
