@@ -17,7 +17,7 @@
 * **Importing Pose by selecting Tip Image file**
 * **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
 * **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
-* **Re-write material function, now it converts Daz's shader to Principled BSDF shader. So you can export all textures from blender.**
+* **Re-write material function, now it converts Daz's shader to Principled shader. So you can export all textures from blender.**
 * **Convert Bump to Normal Map when importing, if you want**
 * **Set position and rotation for env props like lights.**
 
