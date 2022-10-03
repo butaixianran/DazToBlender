@@ -1,13 +1,13 @@
 bl_info = {
-    "name": "DazToBlender",
+    "name": "DazForBlender3",
     "author": "Daz 3D | https://www.daz3d.com",
-    "version": (2, 24, 10),
-    "blender": (2, 90, 0),
+    "version": (2, 25, 0),
+    "blender": (3, 1, 0),
     "location": "3DView > ToolShelf",
     "description": "Daz 3D Genesis 3/8 transfer to Blender",
     "warning": "",
     "support": "COMMUNITY",
-    "wiki_url": "",
+    "doc_url": "https://github.com/butaixianran/DazToBlender/#readme",
     "tracker_url": "https://github.com/butaixianran/DazToBlender/issues",
     "category": "Armature",
 }
@@ -71,7 +71,7 @@ BV = Versions.getBV()
 
 
 class MATERIAL_OT_up(bpy.types.Operator):
-    bl_idname = "material.up"
+    bl_idname = "dfb_material.up"
     bl_label = "UP"
 
     def execute(self, context):
@@ -101,7 +101,7 @@ def adjust_material(context, is_ms):
 
 
 class MATERIAL_OT_down(bpy.types.Operator):
-    bl_idname = "material.down"
+    bl_idname = "dfb_material.down"
     bl_label = "DOWN"
 
     def execute(self, context):
@@ -110,7 +110,7 @@ class MATERIAL_OT_down(bpy.types.Operator):
 
 
 class DEFAULT_OT_material(bpy.types.Operator):
-    bl_idname = "df.material"
+    bl_idname = "dfb_df.material"
     bl_label = "RESET MATERIAL"
 
     def execute(self, context):
@@ -130,7 +130,7 @@ def default_material(context):
 
 
 class MATCH_OT_ikfk(bpy.types.Operator):
-    bl_idname = "match.ikfk"
+    bl_idname = "dfb_match.ikfk"
     bl_label = "Match IK & FK"
 
     def execute(self, context):
@@ -146,7 +146,7 @@ class MATCH_OT_ikfk(bpy.types.Operator):
 
 
 class SCULPT_OT_push(bpy.types.Operator):
-    bl_idname = "to.sculpt"
+    bl_idname = "dfb_to.sculpt"
     bl_label = "To Sculpt"
 
     def execute(self, context):
@@ -167,7 +167,7 @@ class SCULPT_OT_push(bpy.types.Operator):
 
 
 class EXP_OT_morph(bpy.types.Operator):
-    bl_idname = "exsport.morph"
+    bl_idname = "dfb_export.morph"
     bl_label = "To Daz Morph"
 
     def execute(self, context):
@@ -182,7 +182,7 @@ class EXP_OT_morph(bpy.types.Operator):
 
 
 class FK2IK_OT_button(bpy.types.Operator):
-    bl_idname = "my.fktoik"
+    bl_idname = "dfb_my.fktoik"
     bl_label = "IK"
 
     def execute(self, context):
@@ -202,7 +202,7 @@ class FK2IK_OT_button(bpy.types.Operator):
 
 
 class IK2FK_OT_button(bpy.types.Operator):
-    bl_idname = "my.iktofk"
+    bl_idname = "dfb_my.iktofk"
     bl_label = "FK"
 
     def execute(self, context):
@@ -222,7 +222,7 @@ class IK2FK_OT_button(bpy.types.Operator):
 
 
 class LIMB_OT_redraw(bpy.types.Operator):
-    bl_idname = "limb.redraw"
+    bl_idname = "dfb_limb.redraw"
     bl_label = "ReDisplay Subtle FK/IK"
 
     def execute(self, context):
@@ -327,7 +327,9 @@ def register():
     DtbProperties.update_config()
     load_handler(None)
     bpy.app.handlers.load_post.append(load_handler)
-
+    print("DazToBlender: loaded, version %i.%i.%i" % bl_info["version"] )
+    intermediateFolder = Global.getRootPath()
+    print("DazToBlender: Default Intermediate Folder path: \"%s\"." % intermediateFolder )
     # Import Option Group
     bpy.types.Scene.dtbImportOptGroup = bpy.props.PointerProperty(type=DtbPanels.ImportOptionGroup)
 

@@ -96,11 +96,11 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bRemoveShapeKeyFromWearable
     )
 
-    bRemoveShapeKeyDrivers : bpy.props.BoolProperty(
-        name="Remove Shape Key Drivers",
-        description="Check to Remove Shape Key Drivers when importing",
-        default = Global.bRemoveShapeKeyDrivers
-    )
+    # bRemoveShapeKeyDrivers : bpy.props.BoolProperty(
+    #     name="Remove Shape Key Drivers",
+    #     description="Check to Remove Shape Key Drivers when importing",
+    #     default = Global.bRemoveShapeKeyDrivers
+    # )
 
     sss_rate : bpy.props.FloatProperty(
         name="SSS Rate",
@@ -119,19 +119,19 @@ class View3DPanel:
     if BV < 2.80:
         bl_category = "Tools"
     else:
-        bl_category = "Daz To Blender"
+        bl_category = "Daz For Blender3"
 
 
 class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
-    bl_label = "Daz To Blender"
-    bl_idname = "VIEW3D_PT_main_daz"
+    bl_label = "Daz For Blender3"
+    bl_idname = "VIEW3D_PT_main_dfb3"
 
     def draw(self, context):
         l = self.layout
         box = l.box()
         w_mgr = context.window_manager
-        box.operator("import.fbx", icon="POSE_HLT")
-        box.operator("import.env", icon="WORLD")
+        box.operator("dfb_import.fbx", icon="POSE_HLT")
+        box.operator("dfb_import.env", icon="WORLD")
 
         # checkbox for some options
         dtbImportOptGroup = context.scene.dtbImportOptGroup
@@ -151,6 +151,21 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
             l.prop(dtbImportOptGroup, "bReuseNormal")
 
         l.prop(dtbImportOptGroup, "sss_rate")
+
+        # set import option
+        Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
+        Global.isHighHeel = dtbImportOptGroup.isHighHeel
+        Global.bJoinEyelashToBody = dtbImportOptGroup.bJoinEyelashToBody
+        Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
+        Global.bLimitOnTwist = dtbImportOptGroup.bLimitOnTwist
+        Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
+        Global.bReuseNormal = dtbImportOptGroup.bReuseNormal
+        
+        Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
+        Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
+        Global.bRemoveShapeKeyFromWearable = dtbImportOptGroup.bRemoveShapeKeyFromWearable
+        # Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
+        Global.sss_rate = dtbImportOptGroup.sss_rate
 
         if context.object and context.active_object:
             cobj = context.active_object
@@ -208,39 +223,26 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
                     box.prop(w_mgr, "skin_prop", text="")
                 row = box.row(align=True)
                 row.alignment = "EXPAND"
-                row.operator("material.up", icon="TRIA_UP")
-                row.operator("material.down", icon="TRIA_DOWN")
-                box.operator("df.material")
+                row.operator("dfb_material.up", icon="TRIA_UP")
+                row.operator("dfb_material.down", icon="TRIA_DOWN")
+                box.operator("dfb_df.material")
             if context.object.type == "MESH":
                 if Global.isRiggedObject(context.object):
                     if Versions.get_active_object().mode == "OBJECT":
                         l.prop(w_mgr, "new_morph", text="Make New Morph")
                     row = l.row(align=True)
-                    row.operator("exsport.morph", icon="TRIA_LEFT")
-                    row.operator("to.sculpt", icon="MONKEY")
+                    row.operator("dfb_export.morph", icon="TRIA_LEFT")
+                    row.operator("dfb_to.sculpt", icon="MONKEY")
                     if DtbIKBones.obj_exsported != "":
                         l.label(text=DtbIKBones.obj_exsported)
 
                 l.separator()
 
-            # set import option
-            Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
-            Global.isHighHeel = dtbImportOptGroup.isHighHeel
-            Global.bJoinEyelashToBody = dtbImportOptGroup.bJoinEyelashToBody
-            Global.bRotationLimit = dtbImportOptGroup.bRotationLimit
-            Global.bLimitOnTwist = dtbImportOptGroup.bLimitOnTwist
-            Global.bConvertBumpToNormal = dtbImportOptGroup.bConvertBumpToNormal
-            Global.bReuseNormal = dtbImportOptGroup.bReuseNormal
-            
-            Global.bUseCustomBone = dtbImportOptGroup.bUseCustomBone
-            Global.bUseDrivers = dtbImportOptGroup.bUseDrivers
-            Global.bRemoveShapeKeyFromWearable = dtbImportOptGroup.bRemoveShapeKeyFromWearable
-            Global.bRemoveShapeKeyDrivers = dtbImportOptGroup.bRemoveShapeKeyDrivers
-            Global.sss_rate = dtbImportOptGroup.sss_rate
+
 
 
 class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_rigging_daz"
+    bl_idname = "VIEW3D_PT_rigging_dfb3"
     bl_label = "Rigging Tools"
 
     def draw(self, context):
@@ -268,21 +270,21 @@ class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
                                 text=DtbIKBones.ik_name[i],
                                 toggle=True,
                             )
-                    col.operator("limb.redraw", icon="LINE_DATA")
+                    col.operator("dfb_limb.redraw", icon="LINE_DATA")
                     l.separator()
                 elif Global.amIRigfy(context.object):
                     if BV < 2.81:
                         row = l.row(align=True)
                         row.alignment = "EXPAND"
-                        row.operator("my.iktofk", icon="MESH_CIRCLE")
-                        row.operator("my.fktoik", icon="MESH_CUBE")
+                        row.operator("dfb_my.iktofk", icon="MESH_CIRCLE")
+                        row.operator("dfb_my.fktoik", icon="MESH_CUBE")
                 if Global.amIAmtr(context.object):
-                    l.operator("to.rigify", icon="ARMATURE_DATA")
+                    l.operator("dfb_to.rigify", icon="ARMATURE_DATA")
                 if Global.amIRigfy(context.object):
                     if BV < 2.81:
                         row = l.row(align=True)
                         row.alignment = "EXPAND"
-                        row.operator("match.ikfk")
+                        row.operator("dfb_match.ikfk")
                         row.prop(
                             w_mgr,
                             "br_onoff_prop",
@@ -299,20 +301,20 @@ class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_POSE(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_pose_daz"
+    bl_idname = "VIEW3D_PT_pose_dfb3"
     bl_label = "Pose Tools"
 
     def draw(self, context):
         l = self.layout
         box = l.box()
         w_mgr = context.window_manager
-        l.operator("my.clear")
+        l.operator("dfb_my.clear")
         l.separator()
         row = box.row(align=True)
         row.prop(w_mgr, "choose_daz_figure", text="")
-        row.operator("refresh.alldaz", text="", icon="FILE_REFRESH")
-        box.operator("import.pose", icon="POSE_HLT")
-        box.operator("import.animation", icon="POSE_HLT")
+        row.operator("dfb_refresh.alldaz", text="", icon="FILE_REFRESH")
+        box.operator("dfb_import.pose", icon="POSE_HLT")
+        box.operator("dfb_import.animation", icon="POSE_HLT")
         row = box.row(align=True)
         row.prop(w_mgr, "add_pose_lib", text="Add to Pose Library", toggle=False)
         row = box.row(align=True)
@@ -320,7 +322,7 @@ class DTB_PT_POSE(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_MATERIAL(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_material_daz"
+    bl_idname = "VIEW3D_PT_material_dfb3"
     bl_label = "Material Settings"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -336,7 +338,7 @@ class DTB_PT_MATERIAL(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_GENERAL(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_general_daz"
+    bl_idname = "VIEW3D_PT_general_dfb3"
     bl_label = "Import Settings"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -369,11 +371,11 @@ class DTB_PT_GENERAL(View3DPanel, bpy.types.Panel):
         col.prop(w_mgr, "use_custom_path", toggle=False)
         col.prop(scn.dtb_custom_path, "path", text="")
 
-        l.operator("save.daz_settings", icon="DISK_DRIVE")
+        l.operator("dfb_save.daz_settings", icon="DISK_DRIVE")
 
 #TODO: [BRIDGEBUGS-1] Commands Currently do not work as intended need to be refactored and reactivated. 
 class DTB_PT_COMMANDS(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_commands_daz"
+    bl_idname = "VIEW3D_PT_commands_dfb3"
     bl_label = "Commands List"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -387,13 +389,13 @@ class DTB_PT_COMMANDS(View3DPanel, bpy.types.Panel):
         row.prop(w_mgr, "search_prop")
         if context.object and context.active_object:
             if context.object.type == "MESH":
-                row.operator("command.search", icon="VIEWZOOM")
+                row.operator("dfb_command.search", icon="VIEWZOOM")
         else:
-            row.operator("command.search", icon="HAND")
+            row.operator("dfb_command.search", icon="HAND")
 
 
 class DTB_PT_MORPHS(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_morphs_daz"
+    bl_idname = "VIEW3D_PT_morphs_dfb3"
     bl_label = "Morphs List"
 
     def draw(self, context):
@@ -403,7 +405,7 @@ class DTB_PT_MORPHS(View3DPanel, bpy.types.Panel):
         row = box.row(align=True)
         row.alignment = "EXPAND"
         row.prop(w_mgr, "choose_daz_figure", text="")
-        row.operator("refresh.alldaz", text="", icon="FILE_REFRESH")
+        row.operator("dfb_refresh.alldaz", text="", icon="FILE_REFRESH")
         row = box.row(align=True)
         row.alignment = "EXPAND"
         row.prop(w_mgr, "search_morph_list")
@@ -428,7 +430,7 @@ class DTB_PT_MORPHS(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_UTILITIES(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_utilities_daz"
+    bl_idname = "VIEW3D_PT_utilities_dfb3"
     bl_label = "Utilities"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -439,14 +441,14 @@ class DTB_PT_UTILITIES(View3DPanel, bpy.types.Panel):
         row = box.row(align=True)
         row.alignment = "EXPAND"
         row.prop(w_mgr, "choose_daz_figure", text="")
-        row.operator("refresh.alldaz", text="", icon="FILE_REFRESH")
-        box.operator("rename.morphs", icon="OUTLINER_DATA_MESH")
-        l.operator("refresh.alldaz", icon="BOIDS")
-        l.operator("remove.alldaz", icon="BOIDS")
+        row.operator("dfb_refresh.alldaz", text="", icon="FILE_REFRESH")
+        box.operator("dfb_rename.morphs", icon="OUTLINER_DATA_MESH")
+        l.operator("dfb_refresh.alldaz", icon="BOIDS")
+        l.operator("dfb_remove.alldaz", icon="BOIDS")
 
 
 class DTB_PT_MORE_INFO(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_info_daz"
+    bl_idname = "VIEW3D_PT_info_dfb3"
     bl_label = "More Info"
     bl_options = {"DEFAULT_CLOSED"}
 

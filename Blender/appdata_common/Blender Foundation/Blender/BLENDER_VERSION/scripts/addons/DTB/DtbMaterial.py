@@ -2,7 +2,7 @@ import os
 import json
 import pathlib
 import bpy
-import pprint
+# import pprint
 
 from . import Global
 from . import NodeArrange
@@ -256,7 +256,8 @@ class DtbShaders:
             return "Eyelashes"
 
         elif material_type == "Iray Uber":
-            if object_type == "Actor/Character":
+            # if object_type == "Actor/Character":
+            if object_type == "Actor/Character" or object_type == "Follower/Attachment/Lower-Body/Hip/Front":
                 return "IrayUberSkin"
             else:
                 return "IrayUber"

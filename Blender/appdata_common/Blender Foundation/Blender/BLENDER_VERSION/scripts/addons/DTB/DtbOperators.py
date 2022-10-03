@@ -48,7 +48,7 @@ def reload_dropdowns(version):
 
 
 class OP_SAVE_CONFIG(bpy.types.Operator):
-    bl_idname = "save.daz_settings"
+    bl_idname = "dfb_save.daz_settings"
     bl_label = "Save Config"
     bl_description = "Saves the Configuration to be used by Daz and Blender"
     bl_options = {"REGISTER", "UNDO"}
@@ -56,9 +56,16 @@ class OP_SAVE_CONFIG(bpy.types.Operator):
     def execute(self, context):
         scn = context.scene
         w_mgr = context.window_manager
+        data = {}
         config = Global.get_config_path()
-        with open(os.path.join(config, "daz_paths.json"), "r") as f:
-            data = json.load(f)
+        config_file_path = os.path.join(config, "daz_paths.json")
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as f:
+                data = json.load(f)
+
+        # old code            
+        # with open(os.path.join(config, "daz_paths.json"), "r") as f:
+        #     data = json.load(f)
         data["Custom Path"] = scn.dtb_custom_path.path.replace("\\", "/")
         data["Use Custom Path"] = w_mgr.use_custom_path
         with open(os.path.join(config, "daz_paths.json"), "w") as f:
@@ -68,7 +75,7 @@ class OP_SAVE_CONFIG(bpy.types.Operator):
 
 
 class REFRESH_DAZ_FIGURES(bpy.types.Operator):
-    bl_idname = "refresh.alldaz"
+    bl_idname = "dfb_refresh.alldaz"
     bl_label = "Refresh All Daz Figures"
     bl_description = (
         "Refreshes List of Figures\nOnly needed if figure is not in dropdown"
@@ -98,7 +105,7 @@ class REFRESH_DAZ_FIGURES(bpy.types.Operator):
 
 
 class REMOVE_DAZ_OT_button(bpy.types.Operator):
-    bl_idname = "remove.alldaz"
+    bl_idname = "dfb_remove.alldaz"
     bl_label = "Remove All Daz"
     bl_description = "Clears out all imported assets\nCurrently deletes all Materials"
     bl_options = {"REGISTER", "UNDO"}
@@ -120,7 +127,7 @@ class REMOVE_DAZ_OT_button(bpy.types.Operator):
 
 
 class RENAME_MORPHS(bpy.types.Operator):
-    bl_idname = "rename.morphs"
+    bl_idname = "dfb_rename.morphs"
     bl_label = "Remove Morph Prefix"
 
     def execute(self, context):
@@ -157,7 +164,7 @@ class RENAME_MORPHS(bpy.types.Operator):
 class IMP_OT_FBX(bpy.types.Operator):
     """Supports Genesis 3, 8, and 8.1"""
 
-    bl_idname = "import.fbx"
+    bl_idname = "dfb_import.fbx"
     bl_label = "Import New Genesis Figure"
     bl_options = {"REGISTER", "UNDO"}
     root = Global.getRootPath()
@@ -291,15 +298,20 @@ class IMP_OT_FBX(bpy.types.Operator):
             Global.setOpsMode("OBJECT")
             Global.deselect()
 
+            # DB: 2022-Sept-7, Get_Genital()
+            DtbCommands.Get_Genital(dtu)
             # Shape keys
             # Only if user want drivers
             if Global.bUseDrivers:
                 print("Use Drivers")
-                dsk.make_drivers()
+                dsk.make_body_mesh_drivers(Global.getBody())
+                # dsk.make_drivers()
                 Global.deselect()
-                self.pbar(60, wm)
+
+            self.pbar(60, wm)
 
             # only use custom bone when user checked
+            print("Use custom bone: " + str(Global.bUseCustomBone))
             if Global.bUseCustomBone:
                 drb.makeRoot()
                 drb.makePole()
@@ -310,8 +322,7 @@ class IMP_OT_FBX(bpy.types.Operator):
                 Global.setOpsMode("OBJECT")
                 try:
                     CustomBones.CBones()
-                except Exception as e:
-                    print(str(e))
+                except:
                     print("Custom bones currently not supported for this character")
                 self.pbar(80, wm)
                 Global.setOpsMode("OBJECT")
@@ -327,6 +338,7 @@ class IMP_OT_FBX(bpy.types.Operator):
                                 amt.pose.bones[bname].constraints[
                                     bname + "_IK"
                                 ].influence = 0
+                # Do not lock anything
                 # drb.makeBRotationCut(
                 #     db
                 # )  # lock movements around axes with zeroed limits for each bone
@@ -354,7 +366,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             self.pbar(100, wm)
             DtbIKBones.ik_access_ban = False
             if bpy.context.window_manager.morph_prefix:
-                bpy.ops.rename.morphs('EXEC_DEFAULT')
+                bpy.ops.dfb_rename.morphs('EXEC_DEFAULT')
 
             # Join Eyelashes into body
             if Global.bJoinEyelashToBody:
@@ -408,7 +420,9 @@ class IMP_OT_FBX(bpy.types.Operator):
                             continue
 
                     for con in bone.constraints:
-                        con.mute = True
+                        # only mute rotation and location limit
+                        if con.type == "LIMIT_ROTATION" or con.type == "LIMIT_LOCATION":
+                            con.mute = True
 
 
             self.report({"INFO"}, "Success")
@@ -433,14 +447,20 @@ class IMP_OT_FBX(bpy.types.Operator):
         DtbIKBones.ik_access_ban = False
 
     def execute(self, context):
-        if self.root == "":
-            self.report({"ERROR"}, "Appropriate FBX does not exist!")
-            return {"FINISHED"}
-        self.layGround()
-        current_dir = os.getcwd()
         if bpy.context.window_manager.use_custom_path:
             self.root = Global.get_custom_path()
             print(self.root)
+        if self.root == "":
+            self.report({"ERROR"}, "Configuration Error: unable to determine intermediate folder path!")
+            # self.report({"ERROR"}, "Appropriate FBX does not exist!")
+            return {"FINISHED"}
+        if os.path.exists(self.root) == False:
+            self.report({"ERROR"}, "No exports found in intermediate folder: \"" + self.root + "\".")
+
+            return {"FINISHED"}
+        self.layGround()
+
+        current_dir = os.getcwd()
 
         os.chdir(self.root)
 
@@ -470,7 +490,7 @@ class IMP_OT_FBX(bpy.types.Operator):
 
 
 class IMP_OT_ENV(bpy.types.Operator):
-    bl_idname = "import.env"
+    bl_idname = "dfb_import.env"
     bl_label = "Import New Env/Prop"
     bl_description = ""
     bl_options = {"REGISTER", "UNDO"}
@@ -491,7 +511,7 @@ class IMP_OT_ENV(bpy.types.Operator):
 class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
     """Imports Daz Poses (.DUF)"""
 
-    bl_idname = "import.pose"
+    bl_idname = "dfb_import.pose"
     bl_label = "Import Pose"
     bl_options = {"REGISTER", "UNDO"}
     filename_ext: StringProperty(
@@ -552,7 +572,7 @@ class IMP_OT_POSE(bpy.types.Operator, ImportHelper):
 class IMP_OT_ANIM(bpy.types.Operator, ImportHelper):
     """Imports Daz Poses as animation (.DUF)"""
 
-    bl_idname = "import.animation"
+    bl_idname = "dfb_import.animation"
     bl_label = "Import Animation"
     bl_options = {"REGISTER", "UNDO"}
     filename_ext: StringProperty(
@@ -601,7 +621,7 @@ class IMP_OT_ANIM(bpy.types.Operator, ImportHelper):
 
 class CLEAR_OT_Pose(bpy.types.Operator):
 
-    bl_idname = "my.clear"
+    bl_idname = "dfb_my.clear"
     bl_label = "Clear All Pose"
 
     def clear_pose(self):
@@ -638,7 +658,7 @@ class CLEAR_OT_Pose(bpy.types.Operator):
 
 
 class OPTIMIZE_OT_material(bpy.types.Operator):
-    bl_idname = "df.optimize"
+    bl_idname = "dfb_df.optimize"
     bl_label = "Optimize Materials(WIP)"
 
     def execute(self, context):
@@ -672,7 +692,7 @@ def clear_pose():
 
 
 class TRANS_OT_Rigify(bpy.types.Operator):
-    bl_idname = "to.rigify"
+    bl_idname = "dfb_to.rigify"
     bl_label = "To Rigify"
 
     def invoke(self, context, event):

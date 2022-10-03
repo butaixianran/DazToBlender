@@ -298,6 +298,17 @@ class DtbShapeKeys:
             "soft_max": shape_key_max,
         }
 
+
+        # Custom UI code for blender 3+
+        if bpy.app.version[0] >= 3:
+            id_props = mesh_obj.id_properties_ui(morph_label)
+            id_props.update(
+                min=shape_key_min,
+                max=shape_key_max,
+                soft_min=shape_key_min,
+                soft_max=shape_key_max,
+            )
+
         # Add variable
         link_var = driver.variables.new()
         link_var.name = self.get_next_var_name()
@@ -338,6 +349,17 @@ class DtbShapeKeys:
             "soft_min": shape_key_min,
             "soft_max": shape_key_max,
         }
+
+        # Custom UI code for blender 3+
+        if bpy.app.version[0] >= 3:
+            id_props = mesh_obj.id_properties_ui(morph_label)
+            id_props.update(
+                min=shape_key_min,
+                max=shape_key_max,
+                soft_min=shape_key_min,
+                soft_max=shape_key_max,
+            )
+
 
         # Add driver
         driver = key_block.driver_add("value").driver
@@ -444,7 +466,11 @@ class DtbShapeKeys:
         morph_links_list = self.load_morph_link_list()
         shape_key_blocks = shape_key.key_blocks
         for key_block in shape_key_blocks:
-            key_name = key_block.name[len(mesh_name + "__") :]
+
+            if "__" not in key_block.name:
+                key_name = key_block.name
+            else:
+                key_name = key_block.name[len(mesh_name + "__") :]
 
             # Continue for Basis key block or not found in the morph links list
             if not key_name or key_name not in morph_links_list:

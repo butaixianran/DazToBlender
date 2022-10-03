@@ -15,6 +15,8 @@ class DtuLoader:
     materials_list = []
 
     def load_dtu(self):
+        # print("Home Town:")
+        # print(Global.getHomeTown())
         for file in os.listdir(Global.getHomeTown()):
             if file.endswith(".dtu"):
                 dtu = os.path.join(Global.getHomeTown(), file)

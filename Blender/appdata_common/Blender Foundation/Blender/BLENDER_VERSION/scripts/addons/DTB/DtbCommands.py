@@ -15,7 +15,7 @@ from bpy.types import Operator
 
 
 class SEARCH_OT_Commands(bpy.types.Operator):
-    bl_idname = "command.search"
+    bl_idname = "dfb_command.search"
     bl_label = 'Command'
 
     def execute(self, context):
@@ -36,7 +36,8 @@ def search_morph(context):
     if len(key) < 2:
         return
     if key.startswith("#"):
-        WCmd.Command(key[1:], context)
+        Command(key[1:], context)
+        # WCmd.Command(key[1:], context)
         return
     cobj = bpy.context.object
     mesh = cobj.data
@@ -71,7 +72,7 @@ class ImportFilesCollection(bpy.types.PropertyGroup):
 bpy.utils.register_class(ImportFilesCollection)
 
 class IMP_OT_dir(bpy.types.Operator, ImportHelper):
-    bl_idname = "imp.material"
+    bl_idname = "dfb_imp.material"
     bl_label = "Import material"
     bl_description = 'processing select directry'
     bl_label = "Select Directory"
@@ -103,7 +104,7 @@ class IMP_OT_dir(bpy.types.Operator, ImportHelper):
 bpy.utils.register_class(IMP_OT_dir)
 
 class IMP_OT_object(Operator, ImportHelper):
-    bl_idname = "imp.object"
+    bl_idname = "dfb_imp.object"
     bl_label = "Import Daz G8 Object"
     filename_ext : StringProperty(
         default=".obj",
@@ -139,7 +140,7 @@ class IMP_OT_object(Operator, ImportHelper):
 bpy.utils.register_class(IMP_OT_object)
 
 class IMP_OT_dazG8_pose(Operator, ImportHelper):
-    bl_idname = "import_daz_g8.pose"
+    bl_idname = "dfb_import_daz_g8.pose"
     bl_label = "Import Daz G8 Pose"
     filename_ext : StringProperty(
         default=".duf",
@@ -186,7 +187,7 @@ class Command:
             Versions.select(Global.getAmtr(),True)
             Versions.active_object(Global.getAmtr())
             Global.setOpsMode("POSE")
-            bpy.ops.import_daz_g8.pose('INVOKE_DEFAULT')
+            bpy.ops.dfb_import_daz_g8.pose('INVOKE_DEFAULT')
         elif key=='getgenital':
             Get_Genital()
         elif key=='finger' and Global.getAmtr() is not None:
@@ -201,7 +202,7 @@ class Command:
             Global.changeSize(1,[])
             Global.scale_environment()
         elif key=='gettexture':
-            bpy.ops.imp.material('INVOKE_DEFAULT')
+            bpy.ops.dfb_imp.material('INVOKE_DEFAULT')
         elif key=='clearextrabones':
             Global.deselect()
             Versions.active_object_none()
@@ -252,7 +253,7 @@ class Command:
             Versions.active_object(Global.getBody())
             Global.setOpsMode("OBJECT")
             get_obj_name = key
-            bpy.ops.imp.object('INVOKE_DEFAULT')
+            bpy.ops.dfb_imp.object('INVOKE_DEFAULT')
         elif key in not_erace:
             pass
         else:
@@ -293,15 +294,18 @@ def removeEyelash():
 
 class Get_Genital:
     _EYLS = ""
+    dtu= None
     def eyls(self):
         if self._EYLS!="":
             if self._EYLS in Util.myccobjs():
                 return Util.myccobjs().get(self._EYLS)
         return None
 
-    def __init__(self):
+    def __init__(self,dtu):
         if Global.getBody() is None:
             return
+
+        self.dtu = dtu
         self.exec_()
 
     def check_eyls(self,dir):
@@ -319,13 +323,18 @@ class Get_Genital:
                     self._EYLS = new_obj_name
 
     def exec_(self):
-        dir = Global.getRootPath()+"GEN" +Global.getFileSp()
+        # dir = Global.getRootPath()+"GEN" +Global.getFileSp()
+        dir = Global.getRootPath() + "/FIG/FIG0/"
         if os.path.exists(dir)==False:
+            print("GEN path not found: " + str(dir))
             return
         self.check_eyls(dir)
         Global.deselect()
-        list = os.listdir(dir)
+        # list = os.listdir(dir)
+        list = [str(x) + ".obj" for x in self.dtu.get_morph_links_dict().keys()]
         for lidx,l in enumerate(list):
+            if os.path.exists(dir+l) == False:
+                continue
             if l[len(l)-4:].lower() !='.obj':
                 continue
             now_eyls_obj = None
