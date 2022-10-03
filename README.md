@@ -6,11 +6,12 @@
 addon: 2.25.0  
 blender: >= 3.1
 
+
+## Key feature
 ### Daz Script
 * **Handle high heel.** (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
 
 ### Blender Addon
-#### Key feature
 * **It converts Daz Shader to Blender's default Principled Shader** . So, you can export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools.    
 * Changed addon name to "Daz For Blender"(**DFB**), **so you can use it with Official DTB 2022 together**.
 * **Import animation**
