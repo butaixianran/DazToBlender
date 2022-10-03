@@ -16,7 +16,7 @@ blender: >= 3.1
 * Changed addon name to "Daz For Blender"(**DFB**), **so you can use it with Official DTB 2022 together**.
 * **Import animation**
 * **Handle tiled material**
-* It fixed a important bug so **you can import pose file correctly**.
+* It fixed an important bug so **you can import pose file correctly**.
 * **Handle High Heel**. I believe every Daz user need this.
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
 * Convert Bump to Normal Map when importing, so you can export your character to game engine.
