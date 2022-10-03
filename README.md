@@ -1,6 +1,6 @@
 # Daz For Blender Bridge
 
-**This was a fork from Official Daz to Blender Bridge. And it merged everything from DTB 2022, also did some really good updates, which official DTB 2022 doesn't have. It comes with 14 new features and 3 bug fixing.**  
+**This was a fork from Official Daz to Blender Bridge. Now it merged everything from DTB 2022, with some really good updates official DTB 2022 doesn't have. It comes with 14 new features and 3 bug fixing.**  
 
 #### Version
 addon: 2.25.0  
