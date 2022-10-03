@@ -1,28 +1,28 @@
-# Daz To Blender Bridge For Blender 3.X
+# Daz For Blender Bridge
 
-**This fork did some really good updates, it comes with 14 new features and 3 bug fixing.**  
-
-**It will export Daz model from Blender with all textures correctly. So, you can use Blender as a Daz Bridge for all 3D tools. Then you don't need any other bridge any more.**    
+**This was a fork from Official Daz to Blender Bridge. And it merged everything from DTB 2022, also did some really good updates, which official DTB 2022 doesn't have. It comes with 14 new features and 3 bug fixing.**  
 
 #### Version
-2.24.10
+addon: 2.25.0  
+blender: >= 3.1
 
-## Updated Feature:
 ### Daz Script
 * **Handle high heel.** (If you use this script, you don't need to check "High Heel" in Blender's addon when importing a character.)  
 
 ### Blender Addon
-#### New Feature
-* **Handle High heel when importing figure or a pose file**
-* **Importing Pose by selecting Tip Image file**
-* **Importing animation from .duf file**, animation will be on a new NLA tracker as a clip
-* **Merge eyelashes into body mesh**, so you can export morphs from blender to other 3D tools.
-* **Re-write material function, now it converts Daz's shader to Principled shader. So you can export all textures from blender.**
-* **Convert Bump to Normal Map when importing, if you want**
-* **Set position and rotation for env props like lights.**
+#### Key feature
+* **It converts Daz Shader to Blender's default Principled Shader** . So, you can export Daz model from Blender with all textures correctly. Then, you can use Blender as a Daz Bridge for all 3D tools.    
+* Changed addon name to "Daz For Blender"(**DFB**), **so you can use it with Official DTB 2022 together**.
+* **Import animation**
+* **Handle tiled material**
+* It fixed a important bug so **you can import pose file correctly**.
+* Handle High Heel. I believe every Daz user need this.
+* Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
+* Convert Bump to Normal Map when importing, so you can export your character to game engine.
+* **Everything official DTB 2022 has, is merged into this one**.
 
 ### AO Map
-For game engine, AO map is still important. But Daz Character is using UDIM UV, it is a tiled UV, which blender can not bake AO for that. So, I baked it for you with python script, you can get it from "AO" folder of this project.   
+For game engine, AO map is still important. So, I baked it for you with python script, you can get it from "AO" folder of this project.   
 
 This AO can be used on all Genesis 8 characters, no matter how they look.  
 
@@ -32,17 +32,11 @@ This AO can be used on all Genesis 8 characters, no matter how they look.
   - Rotation Limit: Uncheck to turn off(mute) rotation limit after importing. 
   - **Keep Limit on Twist Bone:** check to keep twist bone's rotation limit, but turn off other bones' limit
   - Custom Shape: Check to use custom shapes for bones
-  - Use Drivers: Check to use drivers for morphs(shape keys on mesh). There are some bugs in those drivers expressions, it's your choice. 
-  - **Clear Morph on Clothes**: it clears morphs on all wearable objects. So you won't have something like facial morphs on clothes.
-  - **Convert Bump to Normal**: It is slow, but you only need to do it once if bump map is not changed.
+  - Use Drivers: Check to use drivers for morphs(shape keys on mesh).
+  - **Clear Morph on Clothes**: it clears morphs on all wearable objects. So you won't have facial morphs on clothes.
+  - **Convert Bump to Normal**: It is slow, but you only need to do it once if bump map is not changed. 
   - Reuse Normal: reuse normal map files, so you do not have to re-converted it.
   - **SSS Rate:** Rate between Principled Subsurface and Daz's Translucency Weight
-
-#### Bug fixed
-* Fixed issues by blender 3.0 break change  
-* Fixed a big issue when importing pose. Now you can import poses without problem
-* Fixed node arranging function for Principled shader
-* Fix high heel issues on both Blender and Daz sides.
 
 ## Notice
 ### You Need to Refresh Daz Model List after re-open your scene
@@ -84,25 +78,20 @@ This converted normal map file will be save to:`/bump_file_path/bump_file_name_n
 * Offical Release: [Daz to Blender Bridge][ProductURL]
 * Official Project: [github.com/daz3d/DazToBlender][RepositoryURL]
 
-## Prerequisites
----
-* A compatible version of the [Daz Studio][DazStudioURL] application
-  * Minimum: 4.10
-* A compatible version of the [Blender][BlenderURL] application
-  * Minimum: 2.80
-* Operating System:
-  * Windows 7 or newer
-  * macOS 10.13 (High Sierra) or newer
-
 ## Maunal Installation
----
-* Find the Newest Release [Here][ReleasesURL]
- ### How to download a new release from GitHub
- ---
- 1. Go to the link listed above to find the newest release on GitHub.
- 2. Under Assets you will find the newest build. It will be named DazToBlender_VersionNumber
- 3. Download the zip and Inside you will find the Contents needed to use the bridge. Follow the steps below on how to install the bridge.  
+### Blender Addon
+* Download this whole project as zip, the unzip it.
+* Go to Blender addon subfolder, find "**DFB**" Folder, zip this folder into a zip file.
+* Install this zip file, as blender addon.
 
+### Daz Script
+* Download this whole project as zip, the unzip it.
+* Go to Daz subfolder, copy these daz script files into script folder of your Daz's library. You better create a folder for them. For example, "DFB".
+* In Daz, select your model then run "Daz to Blender.dsa" script. 
+* You can add it as a custom action to Daz's menu.
+
+
+# Following is the old installation document
  ## How to Install to Blender
  ---
   Within the "\Blender" folder, there will be a folder and a zip folder.
