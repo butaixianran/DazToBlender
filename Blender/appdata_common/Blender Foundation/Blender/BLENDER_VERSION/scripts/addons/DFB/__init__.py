@@ -1,5 +1,5 @@
 bl_info = {
-    "name": "DazForBlender3",
+    "name": "DazForBlender",
     "author": "Daz 3D | https://www.daz3d.com",
     "version": (2, 25, 0),
     "blender": (3, 1, 0),
@@ -319,9 +319,10 @@ def load_handler(dummy):
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+
     DtbProperties.init_props()
     DtbProperties.config_props()
-    bpy.types.Scene.dtb_custom_path = PointerProperty(
+    bpy.types.Scene.dfb_custom_path = PointerProperty(
         type=DtbProperties.CustomPathProperties
     )
     DtbProperties.update_config()
@@ -338,7 +339,7 @@ def unregister():
     bpy.app.handlers.load_post.remove(load_handler)
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    del bpy.types.Scene.dtb_custom_path
+    del bpy.types.Scene.dfb_custom_path
     del bpy.types.Scene.dtbImportOptGroup
 
 

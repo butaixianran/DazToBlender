@@ -119,12 +119,12 @@ class View3DPanel:
     if BV < 2.80:
         bl_category = "Tools"
     else:
-        bl_category = "Daz For Blender3"
+        bl_category = "Daz For Blender"
 
 
 class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
-    bl_label = "Daz For Blender3"
-    bl_idname = "VIEW3D_PT_main_dfb3"
+    bl_label = "Daz For Blender"
+    bl_idname = "VIEW3D_PT_main_dfb"
 
     def draw(self, context):
         l = self.layout
@@ -242,7 +242,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_rigging_dfb3"
+    bl_idname = "VIEW3D_PT_rigging_dfb"
     bl_label = "Rigging Tools"
 
     def draw(self, context):
@@ -301,7 +301,7 @@ class DTB_PT_RIGGING(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_POSE(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_pose_dfb3"
+    bl_idname = "VIEW3D_PT_pose_dfb"
     bl_label = "Pose Tools"
 
     def draw(self, context):
@@ -322,7 +322,7 @@ class DTB_PT_POSE(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_MATERIAL(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_material_dfb3"
+    bl_idname = "VIEW3D_PT_material_dfb"
     bl_label = "Material Settings"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -338,7 +338,7 @@ class DTB_PT_MATERIAL(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_GENERAL(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_general_dfb3"
+    bl_idname = "VIEW3D_PT_general_dfb"
     bl_label = "Import Settings"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -369,13 +369,13 @@ class DTB_PT_GENERAL(View3DPanel, bpy.types.Panel):
         box = l.box()
         col = box.column(align=True, heading="Auto-Import Settings")
         col.prop(w_mgr, "use_custom_path", toggle=False)
-        col.prop(scn.dtb_custom_path, "path", text="")
+        col.prop(scn.dfb_custom_path, "path", text="")
 
         l.operator("dfb_save.daz_settings", icon="DISK_DRIVE")
 
 #TODO: [BRIDGEBUGS-1] Commands Currently do not work as intended need to be refactored and reactivated. 
 class DTB_PT_COMMANDS(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_commands_dfb3"
+    bl_idname = "VIEW3D_PT_commands_dfb"
     bl_label = "Commands List"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -395,7 +395,7 @@ class DTB_PT_COMMANDS(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_MORPHS(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_morphs_dfb3"
+    bl_idname = "VIEW3D_PT_morphs_dfb"
     bl_label = "Morphs List"
 
     def draw(self, context):
@@ -430,7 +430,7 @@ class DTB_PT_MORPHS(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_UTILITIES(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_utilities_dfb3"
+    bl_idname = "VIEW3D_PT_utilities_dfb"
     bl_label = "Utilities"
     bl_options = {"DEFAULT_CLOSED"}
 
@@ -448,7 +448,7 @@ class DTB_PT_UTILITIES(View3DPanel, bpy.types.Panel):
 
 
 class DTB_PT_MORE_INFO(View3DPanel, bpy.types.Panel):
-    bl_idname = "VIEW3D_PT_info_dfb3"
+    bl_idname = "VIEW3D_PT_info_dfb"
     bl_label = "More Info"
     bl_options = {"DEFAULT_CLOSED"}
 

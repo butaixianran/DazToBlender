@@ -764,7 +764,7 @@ def getRootPath():
 
 
 def get_custom_path():
-    return bpy.context.scene.dtb_custom_path.path.replace("\\", "/")
+    return bpy.context.scene.dfb_custom_path.path.replace("\\", "/")
 
 
 def get_config_path():

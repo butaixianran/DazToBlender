@@ -120,8 +120,9 @@ class DazRigBlend:
             #     dobj.scale[i] *= self.skeleton_data_dict["skeletonScale"][1]
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
             for i in range(3):
-                dobj.lock_location[i] = True
-                dobj.lock_rotation[i] = True
+                # do not lock transform
+                # dobj.lock_location[i] = True
+                # dobj.lock_rotation[i] = True
 
                 dobj.lock_scale[i] = True
             Global.deselect()
@@ -130,8 +131,9 @@ class DazRigBlend:
         Versions.select(mainbone, True)
         Versions.active_object(mainbone)
         for i in range(3):
-            mainbone.lock_location[i] = True
-            mainbone.lock_rotation[i] = True
+            # do not lock transform
+            # mainbone.lock_location[i] = True
+            # mainbone.lock_rotation[i] = True
             mainbone.lock_scale[i] = True
 
         # Reparent to Armature

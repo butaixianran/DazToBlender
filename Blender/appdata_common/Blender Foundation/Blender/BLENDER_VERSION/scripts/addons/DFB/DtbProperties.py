@@ -209,4 +209,4 @@ def update_config():
                 maxlen=1024,
                 subtype="DIR_PATH",
             )
-            scn.dtb_custom_path = PointerProperty(type=cp)
+            scn.dfb_custom_path = PointerProperty(type=cp)

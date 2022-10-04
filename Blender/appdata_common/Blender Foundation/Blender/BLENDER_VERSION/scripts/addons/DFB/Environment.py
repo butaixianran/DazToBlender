@@ -336,8 +336,9 @@ class ReadFbx:
         Versions.active_object(root)
 
         for i in range(3):
-            root.lock_location[i] = True
-            root.lock_rotation[i] = True
+            # Do not lock transform
+            # root.lock_location[i] = True
+            # root.lock_rotation[i] = True
             root.lock_scale[i] = True
         Global.setOpsMode('OBJECT')    
 

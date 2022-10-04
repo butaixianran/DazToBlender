@@ -66,7 +66,7 @@ class OP_SAVE_CONFIG(bpy.types.Operator):
         # old code            
         # with open(os.path.join(config, "daz_paths.json"), "r") as f:
         #     data = json.load(f)
-        data["Custom Path"] = scn.dtb_custom_path.path.replace("\\", "/")
+        data["Custom Path"] = scn.dfb_custom_path.path.replace("\\", "/")
         data["Use Custom Path"] = w_mgr.use_custom_path
         with open(os.path.join(config, "daz_paths.json"), "w") as f:
             json.dump(data, f, indent=2)

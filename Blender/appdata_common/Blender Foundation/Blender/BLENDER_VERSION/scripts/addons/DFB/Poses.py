@@ -127,8 +127,9 @@ class Posing:
         dobj.rotation_euler.x += math.radians(90)
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         for i in range(3):
-            dobj.lock_location[i] = True
-            dobj.lock_rotation[i] = True
+            # do not lock transform
+            # dobj.lock_location[i] = True
+            # dobj.lock_rotation[i] = True
             dobj.lock_scale[i] = True
         Global.deselect()
 
