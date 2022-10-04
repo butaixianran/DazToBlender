@@ -19,6 +19,7 @@ blender: >= 3.1
 * **Import animation**
 * **Handle tiled material**
 * It fixed an important bug so **you can import pose file correctly**.
+* Import a pose file by picking its tip image.
 * **Handle High Heel**. I believe every Daz user need this.
 * Merge eyelashes into body mesh, so you can export morphs from blender to other 3D tools.
 * Convert Bump to Normal Map when importing, so you can export your character to game engine.
@@ -83,9 +84,9 @@ This converted normal map file will be save to:`/bump_file_path/bump_file_name_n
 
 ## Maunal Installation
 ### Blender Addon
-* Download this whole project as zip, the unzip it.
+* Download this whole project as zip, then unzip it.
 * Go to Blender addon subfolder, find "**DFB**" Folder, zip this folder into a zip file.
-* Install this zip file, as blender addon.
+* Install this zip file as a blender addon.
 
 ### Daz Script
 * Download this whole project as zip, the unzip it.
