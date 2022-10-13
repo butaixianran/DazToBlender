@@ -754,15 +754,38 @@ class DtbShaders:
                     Dual_Lobe_Specular_Reflectivity = self.mat_property_dict.get("Dual Lobe Specular Reflectivity")
                     Specular_Lobe_1_Roughness = self.mat_property_dict.get("Specular Lobe 1 Roughness")
                     Specular_Lobe_2_Roughness = self.mat_property_dict.get("Specular Lobe 2 Roughness")
+                    Specular_Lobe_2_Roughness_Mult = self.mat_property_dict.get("Specular Lobe 2 Roughness Mult")
                     Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
+
+                    if not Specular_Lobe_2_Roughness:
+                        if Specular_Lobe_2_Roughness_Mult:
+                            Specular_Lobe_2_Roughness = Specular_Lobe_2_Roughness_Mult
+                        else:
+                            # 设置一个空的对象，避免后面报错
+                            Specular_Lobe_2_Roughness = {"Value": 0.5, "Texture": ""}
 
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
-                    if Glossy_Weight["Value"] > 0:
-                        Glossy_Layered_Weight = Glossy_Weight
+
+                    if not Glossy_Layered_Weight:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Layered_Weight = {"Value": 0, "Texture":""}
+
+                    # 如果使用了 Glossy_Weight ,就用它替换 Glossy_Layered_Weight
+                    if Glossy_Weight:
+                        if Glossy_Weight["Value"] > 0:
+                            Glossy_Layered_Weight = Glossy_Weight
 
                     Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
                     Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
+
+                    if not Glossy_Reflectivity:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Reflectivity = {"Value": 0, "Texture":""}
+
+                    if not Glossy_Roughness:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Roughness = {"Value": 0.5, "Texture":""}
 
                     # calculate dual lobe specular's final roughness
                     r1 = Specular_Lobe_1_Roughness["Value"]
@@ -822,15 +845,40 @@ class DtbShaders:
                     Dual_Lobe_Specular_Reflectivity = self.mat_property_dict.get("Dual Lobe Specular Reflectivity")
                     Specular_Lobe_1_Roughness = self.mat_property_dict.get("Specular Lobe 1 Roughness")
                     Specular_Lobe_2_Roughness = self.mat_property_dict.get("Specular Lobe 2 Roughness")
+                    Specular_Lobe_2_Roughness_Mult = self.mat_property_dict.get("Specular Lobe 2 Roughness Mult")
                     Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
+
+                    if not Specular_Lobe_2_Roughness:
+                        if Specular_Lobe_2_Roughness_Mult:
+                            Specular_Lobe_2_Roughness = Specular_Lobe_2_Roughness_Mult
+                        else:
+                            # 设置一个空的对象，避免后面报错
+                            Specular_Lobe_2_Roughness = {"Value": 0.5, "Texture": ""}
+
 
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
-                    if Glossy_Weight["Value"] > 0:
-                        Glossy_Layered_Weight = Glossy_Weight
+
+                    if not Glossy_Layered_Weight:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Layered_Weight = {"Value": 0, "Texture":""}
+
+                    # 如果使用了 Glossy_Weight ,就用它替换 Glossy_Layered_Weight
+                    if Glossy_Weight:
+                        if Glossy_Weight["Value"] > 0:
+                            Glossy_Layered_Weight = Glossy_Weight
 
                     Glossy_Reflectivity = self.mat_property_dict.get("Glossy Reflectivity")
                     Glossy_Roughness = self.mat_property_dict.get("Glossy Roughness")
+
+                    if not Glossy_Reflectivity:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Reflectivity = {"Value": 0, "Texture":""}
+
+                    if not Glossy_Roughness:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Roughness = {"Value": 0.5, "Texture":""}
+
 
                     # calculate dual lobe specular's final roughness
                     r1 = Specular_Lobe_1_Roughness["Value"]
@@ -922,13 +970,26 @@ class DtbShaders:
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
 
+                    if not Glossy_Layered_Weight:
+                        # 设置一个空的对象，避免后面报错
+                        Glossy_Layered_Weight = {"Value": 0, "Texture":""}
+
+                    if not Top_Coat_Weight:
+                        # 设置一个空的对象，避免后面报错
+                        Top_Coat_Weight = {"Value": 0, "Texture":""}
+
                     if Glossy_Layered_Weight["Value"] > 0:
                         Glossy_Anisotropy = self.mat_property_dict.get("Glossy Anisotropy")
                         value = Glossy_Anisotropy["Value"]
 
                     elif Top_Coat_Weight["Value"] > 0 or len(Top_Coat_Weight["Texture"])>0:
                         Top_Coat_Anisotropy = self.mat_property_dict.get("Top Coat Anisotropy")
-                        value = Top_Coat_Anisotropy["Value"]
+
+                        # set a default value
+                        if not Top_Coat_Anisotropy:
+                            value = 0
+                        else:
+                            value = Top_Coat_Anisotropy["Value"]
 
                     shader_node.inputs[input_key].default_value = value
 
@@ -938,13 +999,22 @@ class DtbShaders:
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
 
+                    if not Glossy_Layered_Weight:
+                        # set a default value
+                        Glossy_Layered_Weight = {"Value": 0, "Texture":""}
+
                     if Glossy_Layered_Weight["Value"] > 0:
                         Glossy_Anisotropy_Rotations = self.mat_property_dict.get("Glossy Anisotropy Rotations")
                         value = Glossy_Anisotropy_Rotations["Value"]
 
                     elif Top_Coat_Weight["Value"] > 0 or len(Top_Coat_Weight["Texture"])>0:
                         Top_Coat_Rotations = self.mat_property_dict.get("Top Coat Rotations")
-                        value = Top_Coat_Rotations["Value"]
+
+                        # set a default value
+                        if not Top_Coat_Rotations:
+                            value = 0
+                        else:
+                            value = Top_Coat_Rotations["Value"]
 
                     shader_node.inputs[input_key].default_value = value
 
@@ -955,6 +1025,10 @@ class DtbShaders:
                 elif input_key == "Clearcoat":
                     Top_Coat_Weight = self.mat_property_dict.get("Top Coat Weight")
                     Reflectivity = self.mat_property_dict.get("Reflectivity")
+
+                    # set a default value
+                    if not Reflectivity:
+                        Reflectivity = {"Value": 0, "Texture": ""}
 
                     if len(Top_Coat_Weight["Texture"])>0:
                         #use Top_Coat_Weight texture
@@ -983,6 +1057,12 @@ class DtbShaders:
 
                     # need to set alpha too
                     Refraction_Weight = self.mat_property_dict.get("Refraction Weight")
+
+                    # set a default value
+                    if not Refraction_Weight:
+                        Refraction_Weight = {"Value": 0, "Texture": ""}
+
+
                     if Refraction_Weight["Value"] > 0:
                         if shader_node.inputs["Alpha"].default_value > 0.3:
                             shader_node.inputs["Alpha"].default_value = 0.3
@@ -1009,12 +1089,19 @@ class DtbShaders:
                     # Luminance Units: cd/m^2(0) kcd/m^2(1), cd/ft^2(2), cd/cm^2(3)
                     Luminance_Units = self.mat_property_dict.get("Luminance Units")
 
-                    luminance_value = Luminance["Value"]
-                    if Luminance_Units == 1:
+                    if not Luminance_Units:
+                        Luminance_Units = {"Value": 0, "Texture": ""}
+
+                    luminance_value = 0
+                    if Luminance:
+                        luminance_value = Luminance["Value"]
+
+
+                    if Luminance_Units["Value"] == 1:
                         luminance_value = luminance_value * 1000
-                    elif Luminance_Units == 2:
+                    elif Luminance_Units["Value"] == 2:
                         luminance_value = luminance_value * (1/0.3048) * (1/0.3048)
-                    elif Luminance_Units == 3:
+                    elif Luminance_Units["Value"] == 3:
                         luminance_value = luminance_value * 100 * 100
 
                     shader_node.inputs[input_key].default_value = luminance_value/50000
@@ -1033,6 +1120,14 @@ class DtbShaders:
                     # re-set value for transmission
                     Cutout_Opacity = self.mat_property_dict.get("Cutout Opacity")
                     Refraction_Weight = self.mat_property_dict.get("Refraction Weight")
+
+                    # set a default value
+                    if not Refraction_Weight:
+                        Refraction_Weight = {"Value": 0, "Texture": ""}
+
+                    if not Cutout_Opacity:
+                        Cutout_Opacity = {"Value": 0, "Texture": ""}
+
                     if Refraction_Weight["Value"] > 0 and Cutout_Opacity["Texture"] == "":
                         if shader_node.inputs[input_key].default_value > 0.3:
                             shader_node.inputs[input_key].default_value = 0.3
@@ -1128,6 +1223,10 @@ class DtbShaders:
 
             # Set Alpha Modes
             Cutout_Opacity = self.mat_property_dict.get("Cutout Opacity")
+            # set a default value
+            if not Cutout_Opacity:
+                Cutout_Opacity = {"Value": 0, "Texture": ""}
+
             if shader_node.inputs["Alpha"].default_value < 1 or len(Cutout_Opacity["Texture"])>0:
                 mat.blend_method = 'HASHED'
 
