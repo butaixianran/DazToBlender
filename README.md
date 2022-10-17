@@ -90,7 +90,7 @@ This converted normal map file will be save to:`/bump_file_path/bump_file_name_n
 
 ### Daz Script
 * Download this whole project as zip, the unzip it.
-* Go to Daz subfolder, copy these daz script files into script folder of your Daz's library. You better create a folder for them. For example, "DFB".
+* Go to Daz subfolder, copy these daz script files into script folder of your Daz's content library. You better create a folder for them. For example, "DFB".
 * In Daz, select your model then run "Daz to Blender.dsa" script. 
 * You can add it as a custom action to Daz's menu.
 
