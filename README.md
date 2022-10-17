@@ -89,6 +89,9 @@ This converted normal map file will be save to:`/bump_file_path/bump_file_name_n
 * Install this zip file as a blender addon.
 
 ### Daz Script
+You can use Daz's official DTB 2022 at Daz side, with this blender addon at Blender side. So no need to install this daz script into Daz.  
+
+But, if you still want to use this at Daz side. Do following steps:  
 * Download this whole project as zip, the unzip it.
 * Go to Daz subfolder, copy these daz script files into script folder of your Daz's content library. You better create a folder for them. For example, "DFB".
 * In Daz, select your model then run "Daz to Blender.dsa" script. 
