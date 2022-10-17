@@ -123,8 +123,8 @@ def bumpToNormal(bump_path, normal_path, normal_name, file_format, max_size):
         
         if max_length > max_size:
             resize_rate = max_size/max_length
-            width = width * resize_rate
-            height = height * resize_rate
+            width = int(width * resize_rate)
+            height = int(height * resize_rate)
 
             src_image.scale(width, height)
 
