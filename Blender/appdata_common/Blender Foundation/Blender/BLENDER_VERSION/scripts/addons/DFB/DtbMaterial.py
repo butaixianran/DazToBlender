@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 import pathlib
@@ -716,6 +717,10 @@ class DtbShaders:
 
                 elif input_key == "Subsurface Color":
                     Translucency_Color = self.mat_property_dict.get("Translucency Color")
+
+                    if not Translucency_Color:
+                        Translucency_Color = {"Value": "#ffffff"}
+
                     # do not use Translucency Color's texture, always use the color value
                     color = self.daz_color_to_rgb(Translucency_Color["Value"])
 
@@ -757,12 +762,24 @@ class DtbShaders:
                     Specular_Lobe_2_Roughness_Mult = self.mat_property_dict.get("Specular Lobe 2 Roughness Mult")
                     Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
 
+                    if not Dual_Lobe_Specular_Weight:
+                        Dual_Lobe_Specular_Weight = {"Value": 0, "Texture": ""}
+                    
+                    if not Dual_Lobe_Specular_Reflectivity:
+                        Dual_Lobe_Specular_Reflectivity = {"Value": 0.5, "Texture": ""}
+
+                    if not Specular_Lobe_1_Roughness:
+                        Specular_Lobe_1_Roughness = {"Value": 0, "Texture": ""}
+
                     if not Specular_Lobe_2_Roughness:
                         if Specular_Lobe_2_Roughness_Mult:
                             Specular_Lobe_2_Roughness = Specular_Lobe_2_Roughness_Mult
                         else:
                             # 设置一个空的对象，避免后面报错
                             Specular_Lobe_2_Roughness = {"Value": 0.5, "Texture": ""}
+
+                    if not Dual_Lobe_Specular_Ratio:
+                        Dual_Lobe_Specular_Ratio = {"Value": 0.85}
 
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
@@ -848,6 +865,15 @@ class DtbShaders:
                     Specular_Lobe_2_Roughness_Mult = self.mat_property_dict.get("Specular Lobe 2 Roughness Mult")
                     Dual_Lobe_Specular_Ratio = self.mat_property_dict.get("Dual Lobe Specular Ratio")
 
+                    if not Dual_Lobe_Specular_Weight:
+                        Dual_Lobe_Specular_Weight = {"Value": 0, "Texture": ""}
+                    
+                    if not Dual_Lobe_Specular_Reflectivity:
+                        Dual_Lobe_Specular_Reflectivity = {"Value": 0.5, "Texture": ""}
+
+                    if not Specular_Lobe_1_Roughness:
+                        Specular_Lobe_1_Roughness = {"Value": 0, "Texture": ""}
+
                     if not Specular_Lobe_2_Roughness:
                         if Specular_Lobe_2_Roughness_Mult:
                             Specular_Lobe_2_Roughness = Specular_Lobe_2_Roughness_Mult
@@ -855,6 +881,8 @@ class DtbShaders:
                             # 设置一个空的对象，避免后面报错
                             Specular_Lobe_2_Roughness = {"Value": 0.5, "Texture": ""}
 
+                    if not Dual_Lobe_Specular_Ratio:
+                        Dual_Lobe_Specular_Ratio = {"Value": 0.85}
 
                     Glossy_Layered_Weight = self.mat_property_dict.get("Glossy Layered Weight")
                     Glossy_Weight = self.mat_property_dict.get("Glossy Weight")
@@ -1003,6 +1031,9 @@ class DtbShaders:
                         # set a default value
                         Glossy_Layered_Weight = {"Value": 0, "Texture":""}
 
+                    if not Top_Coat_Weight:
+                        Top_Coat_Weight = {"Value": 0, "Texture":""}
+
                     if Glossy_Layered_Weight["Value"] > 0:
                         Glossy_Anisotropy_Rotations = self.mat_property_dict.get("Glossy Anisotropy Rotations")
                         value = Glossy_Anisotropy_Rotations["Value"]
@@ -1027,6 +1058,9 @@ class DtbShaders:
                     Reflectivity = self.mat_property_dict.get("Reflectivity")
 
                     # set a default value
+                    if not Top_Coat_Weight:
+                        Top_Coat_Weight = {"Value": 0, "Texture":""}
+
                     if not Reflectivity:
                         Reflectivity = {"Value": 0, "Texture": ""}
 
