@@ -711,9 +711,9 @@ class DtbShaders:
 
                 elif input_key == "Subsurface Radius":
                     # always use this value
-                    shader_node.inputs[input_key].default_value[0] = 0.2
-                    shader_node.inputs[input_key].default_value[1] = 0.2
-                    shader_node.inputs[input_key].default_value[2] = 0.2
+                    shader_node.inputs[input_key].default_value[0] = 0.012
+                    shader_node.inputs[input_key].default_value[1] = 0.006
+                    shader_node.inputs[input_key].default_value[2] = 0.006
 
                 elif input_key == "Subsurface Color":
                     Translucency_Color = self.mat_property_dict.get("Translucency Color")

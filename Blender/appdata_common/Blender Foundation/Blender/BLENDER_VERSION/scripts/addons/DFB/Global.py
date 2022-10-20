@@ -25,7 +25,7 @@ bJoinEyelashToBody = True
 bConvertBumpToNormal = False
 bReuseNormal = True
 # rate between Blender's Subsurface and iray's Translucency Weight
-sss_rate = 0.1
+sss_rate = 0.5
 isMan = False
 root = ""
 isGen = False
