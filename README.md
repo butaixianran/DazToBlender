@@ -4,6 +4,11 @@
 
 ![addon](img/addon_screenshot.jpg)
 
+# About Genesis 9
+You can import G9 with this addon without error. I added a quick fix for G9's shapekey. Custom shape doesn't work for now, need to wait for official DTB 2022's update. I won't waste my time on that just because Daz changes bone name again.  
+
+
+
 #### Version
 addon: 2.25.1   
 blender: >= 3.1
