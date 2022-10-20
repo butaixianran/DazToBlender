@@ -187,6 +187,8 @@ class DtbShapeKeys:
             # ERCKeyed
 
             keyed = morph_link["Keys"]
+            key_0 = "0"
+            key_1 = "0"
 
             # Currently Skip the 3rd Key if Key 0 has two
             for i in range(len(keyed)):
@@ -206,7 +208,7 @@ class DtbShapeKeys:
 
             # Temporily Run lForearmBend as absolute as incorrect roll is applied.
             bone_name = morph_link["Bone"]
-            if bone_name == "lForearmBend":
+            if bone_name == "lForearmBend" or bone_name == "l_forearm":
                 key_0 = str(abs(float(key_0)))
                 key_1 = str(abs(float(key_1)))
 
