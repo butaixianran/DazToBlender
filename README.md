@@ -72,9 +72,9 @@ This is how this official bridge works, I just leave it that way.
 Be noticed, EyeClosed shape key is not a real shape key, it is a driver of EyeClosedL and EyeClosedR. If you don't use drivers, EyeClosed shape key won't work, you need to set EyeClosedL and EyeClosedR directly.  
 
 ### Subsurface
-Blender will add a very strong blur to subsurface material, which will make you can not see your model clearly.  
+Blender will add a blur to subsurface material, which will make you can not see your model clearly.  
 So it is converted in this way:  
-`Blender's Subsurface = Translucency Weight * SSS_Rate` (SSS_Rate's default value is 0.1)  
+`Blender's Subsurface = Translucency Weight * SSS_Rate` (SSS_Rate's default value is 0.5)  
 Then you can see your model more clearly. You can alwasy change SSS Rate on the Panel as you wish  
 
 ### Convert Bump Map to Normal Map
