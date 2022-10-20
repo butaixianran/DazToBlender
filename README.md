@@ -13,7 +13,7 @@ The issue is, When exporting fbx, Blender will drop all textures, unless it is d
 
 
 #### Version
-addon: 2.26.0   
+addon: 2.26.1   
 blender: >= 3.1
 
 
