@@ -7,6 +7,9 @@
 # About Genesis 9
 You can import G9 with this addon without error. I added a quick fix for G9's shapekey. Custom shape doesn't work for now, need to wait for official DTB 2022's update. I won't waste my time on that just because Daz changes bone name again.  
 
+Genesis 9's brow color is white, because in Daz, G9 use a white color image as brow's texture, then overwrite this color on material setting. If I do the same thing for you in Blender, I will have to add a node between color texture node and shader node. Once I do that, this texture can not be export when you exporting fbx from Blender.  
+
+Yes, Blender's fbx exporting will drop all textures, unless it is directly linked to shade node. I can not make people give up on fbx. So, you better prepare a brown brow texture map for G9.  
 
 
 #### Version
