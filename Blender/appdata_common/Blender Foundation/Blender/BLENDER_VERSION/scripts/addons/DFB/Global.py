@@ -9,6 +9,7 @@ from . import Versions
 from . import Util
 
 bUsePrincipledMat = True
+bUseTextureForSSS = True
 isHighHeel = False
 bRotationLimit = False
 bLimitOnTwist = True

@@ -36,6 +36,12 @@ class ImportOptionGroup(bpy.types.PropertyGroup):
         default = Global.bUsePrincipledMat
     )
 
+    bUseTextureForSSS : bpy.props.BoolProperty(
+        name="Use Texture for SSS",
+        description="Check to use texture of Daz's Translucency Color for SSS color",
+        default = Global.bUseTextureForSSS
+    )
+
 
     isHighHeel : bpy.props.BoolProperty(
         name="High Heel",
@@ -135,25 +141,34 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
 
         # checkbox for some options
         dtbImportOptGroup = context.scene.dtbImportOptGroup
-        l.prop(dtbImportOptGroup, "bUsePrincipledMat")
+
+        box = l.box()
+        box.prop(dtbImportOptGroup, "bUsePrincipledMat")
+        if dtbImportOptGroup.bUsePrincipledMat:
+            box.prop(dtbImportOptGroup, "bUseTextureForSSS")
+
         l.prop(dtbImportOptGroup, "isHighHeel")
         l.prop(dtbImportOptGroup, "bJoinEyelashToBody")
-        l.prop(dtbImportOptGroup, "bRotationLimit")
 
+        box = l.box()
+        box.prop(dtbImportOptGroup, "bRotationLimit")
         if not dtbImportOptGroup.bRotationLimit:
-            l.prop(dtbImportOptGroup, "bLimitOnTwist")
+            box.prop(dtbImportOptGroup, "bLimitOnTwist")
 
         l.prop(dtbImportOptGroup, "bUseCustomBone")
         l.prop(dtbImportOptGroup, "bUseDrivers")
         l.prop(dtbImportOptGroup, "bRemoveShapeKeyFromWearable")
-        l.prop(dtbImportOptGroup, "bConvertBumpToNormal")
+
+        box = l.box()
+        box.prop(dtbImportOptGroup, "bConvertBumpToNormal")
         if dtbImportOptGroup.bConvertBumpToNormal:
-            l.prop(dtbImportOptGroup, "bReuseNormal")
+            box.prop(dtbImportOptGroup, "bReuseNormal")
 
         l.prop(dtbImportOptGroup, "sss_rate")
 
         # set import option
         Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
+        Global.bUseTextureForSSS = dtbImportOptGroup.bUseTextureForSSS
         Global.isHighHeel = dtbImportOptGroup.isHighHeel
         Global.bJoinEyelashToBody = dtbImportOptGroup.bJoinEyelashToBody
         Global.bRotationLimit = dtbImportOptGroup.bRotationLimit

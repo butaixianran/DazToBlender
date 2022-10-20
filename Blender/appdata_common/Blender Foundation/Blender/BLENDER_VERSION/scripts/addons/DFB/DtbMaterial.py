@@ -719,28 +719,32 @@ class DtbShaders:
                     Translucency_Color = self.mat_property_dict.get("Translucency Color")
 
                     if not Translucency_Color:
-                        Translucency_Color = {"Value": "#ffffff"}
+                        Translucency_Color = {"Value": "#ffffff", "Texture": ""}
 
-                    # do not use Translucency Color's texture, always use the color value
-                    color = self.daz_color_to_rgb(Translucency_Color["Value"])
+                    if Translucency_Color["Texture"] != "" and Global.bUseTextureForSSS:
+                        self.set_tex_node(Translucency_Color["Texture"], "Translucency Color", mat_nodes, mat_links, shader_node, input_key)
+                    else:
+                        # use Daz's Translucency Color Value and SSS Reflectance Tint for SSS color
+                        color = self.daz_color_to_rgb(Translucency_Color["Value"])
 
-                    # Base_Color_Effect values: Scatter Only(0), Scatter & Transmit(1)，Scatter & Transmit Intensity(2)
-                    Base_Color_Effect = self.mat_property_dict.get("Base Color Effect")
-                    
-                    if Base_Color_Effect is not None:
-                        if Base_Color_Effect["Value"] != 0:
-                            SSS_Reflectance_Tint = self.mat_property_dict.get("SSS Reflectance Tint")
-                            tint_color = self.daz_color_to_rgb(SSS_Reflectance_Tint["Value"])
-                            #r
-                            color[0] = color[0] * tint_color[0]
-                            #g
-                            color[1] = color[1] * tint_color[1]
-                            #b
-                            color[2] = color[2] * tint_color[2]
-                            #alpha is always 1, so no need to handle
+                        # Base_Color_Effect values: Scatter Only(0), Scatter & Transmit(1)，Scatter & Transmit Intensity(2)
+                        Base_Color_Effect = self.mat_property_dict.get("Base Color Effect")
+                        
+                        if Base_Color_Effect is not None:
+                            if Base_Color_Effect["Value"] != 0:
+                                SSS_Reflectance_Tint = self.mat_property_dict.get("SSS Reflectance Tint")
+                                tint_color = self.daz_color_to_rgb(SSS_Reflectance_Tint["Value"])
+                                #r
+                                color[0] = color[0] * tint_color[0]
+                                #g
+                                color[1] = color[1] * tint_color[1]
+                                #b
+                                color[2] = color[2] * tint_color[2]
+                                #alpha is always 1, so no need to handle
 
-                    # set blender's color
-                    shader_node.inputs[input_key].default_value = (color[0], color[1], color[2], color[3])
+                        # set blender's color
+                        shader_node.inputs[input_key].default_value = (color[0], color[1], color[2], color[3])
+
 
                 elif input_key == "Subsurface IOR":
                     # useless
