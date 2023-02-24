@@ -36,14 +36,14 @@ class Posing:
             json_object = json.load(myjson)
         except ValueError as e:
             return False
-        return True    
+        return True
 
 
     def load_duf(self, input_duf):
-        with open(input_duf, "r") as file:
+        with open(input_duf, "r", encoding='utf-8-sig') as file:
             string = file
             if self.is_json(string):
-                with open(input_duf, "r") as file:
+                with open(input_duf, "r", encoding='utf-8-sig') as file:
                     return json.load(file)
             else:
                 data =  gzip.open(input_duf, "rb")
