@@ -13,7 +13,7 @@ The issue is, When exporting fbx, Blender will drop all textures, unless it is d
 
 
 #### Version
-addon: 2.26.1   
+addon: 2.26.2   
 blender: >= 3.1
 
 
@@ -66,6 +66,13 @@ Choose the one you want to use. Then shape key drivers will show up, also you ca
 ![](img/morphs.jpg)  
 
 This is how this official bridge works, I just leave it that way.  
+
+### Hierarchical Pose Presets
+This addon can not import **Hierarchical Pose Presets**. But you can load this kind of pose preset to a character in Daz, then re-save it as a normal pose preset. This re-saved new pose preset can be imported.  
+
+What is **Hierarchical Pose Presets**? They look like a normal pose preset, but in totally different format. They are used to save multiple item's pose together in one file. For example, a pose for playing mobile phone. It gonna set both the character and the mobile phone's pose with one preset file.   
+
+This can not be imported, you have to re-save it into a normal pose preset file in Daz, then import the re-saved one.  
 
 
 ### EyeClosed shape key
