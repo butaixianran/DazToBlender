@@ -337,6 +337,16 @@ class Posing:
             return
 
         pose_data = self.load_duf(dur)
+
+        # check hierarchical pose preset
+        pose_preset_type = pose_data["asset_info"]["type"]
+        if "hierarchical" in pose_preset_type:
+            print("Can not import preset type: hierarchical pose preset. Try another normal preset")
+            print("Hierarchical pose preset is a special format of pose preset to import poses for multiple items at once")
+            print("It is not supported. But you can load this preset in Daz, then re-save it into a normal pose preset.")
+            print("And that re-saved normal pose preset can be imported")
+            return
+
         self.pose_data_dict["Asset Name"] = pose_data["asset_info"]["id"].split("/")[-1].replace("%20"," ").replace(".duf","")
         for info in pose_data["scene"]["animations"]:
             url = info["url"]
