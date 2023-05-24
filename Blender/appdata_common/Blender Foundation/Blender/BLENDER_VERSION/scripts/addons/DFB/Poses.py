@@ -518,8 +518,8 @@ class Posing:
 
         elif rotation_order == "YZX":
         # Bones that are pointed down with YZX order
-        # TODO: remove hardcoding
-            if name in ["hip", "pelvis", "lThighBend", "rThighBend", "lThighTwist", "rThighTwist", "lShin", "rShin"]:
+            lower_extremities_to_flip = DataBase.get_lower_extremities_to_flip()
+            if name in lower_extremities_to_flip:
                 # Y invert (-Y)
                 rotations[1] = -rotations[1]
 
@@ -592,8 +592,8 @@ class Posing:
 
         elif rotation_order == "YZX":
         # Bones that are pointed down with YZX order
-        # TODO: remove hardcoding
-            if name in ["hip", "pelvis", "lThighBend", "rThighBend", "lThighTwist", "rThighTwist", "lShin", "rShin"]:
+            lower_extremities_to_flip = DataBase.get_lower_extremities_to_flip()
+            if name in lower_extremities_to_flip:
                 # Y invert (-Y)
                 for frame in rotations[1]:
                     frame[1] = -float(frame[1])
@@ -752,18 +752,23 @@ class Posing:
             if use == "FIG":
                 if self.pose_lib_check():
                     self.add_pose(transform_data)
-                else:
                     num = ""
                     if ".0" in self.fig_object_name:
                         num = " " + self.fig_object_name[-1]
                     bpy.ops.pose.select_all(action="SELECT")
+                    bpy.ops.poselib.pose_add(frame=0, name=str(self.fig_object["Asset Name"] + " Pose"))
+                # else:
+                #     num = ""
+                #     if ".0" in self.fig_object_name:
+                #         num = " " + self.fig_object_name[-1]
+                #     bpy.ops.pose.select_all(action="SELECT")
 
-                    pose_name = str(self.fig_object["Asset Name"] + " Pose")
+                #     pose_name = str(self.fig_object["Asset Name"] + " Pose")
 
-                    if "Asset Name" in transform_data.keys():
-                        pose_name = transform_data["Asset Name"]                    
+                #     if "Asset Name" in transform_data.keys():
+                #         pose_name = transform_data["Asset Name"]                    
 
-                    bpy.ops.poselib.pose_add(frame=0, name=pose_name)
+                #     bpy.ops.poselib.pose_add(frame=0, name=pose_name)
                     action = bpy.data.actions["PoseLib"]
                     action.name = self.fig_object["Asset Name"] + num + " Pose Library"
                     bpy.ops.pose.select_all(action="DESELECT")

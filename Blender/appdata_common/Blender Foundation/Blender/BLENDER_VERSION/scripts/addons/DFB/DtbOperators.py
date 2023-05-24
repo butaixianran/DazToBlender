@@ -62,10 +62,6 @@ class OP_SAVE_CONFIG(bpy.types.Operator):
         if os.path.exists(config_file_path):
             with open(config_file_path, "r") as f:
                 data = json.load(f)
-
-        # old code            
-        # with open(os.path.join(config, "daz_paths.json"), "r") as f:
-        #     data = json.load(f)
         data["Custom Path"] = scn.dfb_custom_path.path.replace("\\", "/")
         data["Use Custom Path"] = w_mgr.use_custom_path
         with open(os.path.join(config, "daz_paths.json"), "w") as f:
@@ -156,7 +152,7 @@ class RENAME_MORPHS(bpy.types.Operator):
                 key.name = key.name.replace(string_to_replace, "")
         self.report({"INFO"}, "Morphs renamed!")
 
-        return {"FINISHED"} 
+        return {"FINISHED"}
 
 
 # End of Utlity Classes
@@ -177,7 +173,6 @@ class IMP_OT_FBX(bpy.types.Operator):
     def finish_obj(self):
         Versions.reverse_language()
         Versions.pivot_active_element_and_center_and_trnormal()
-        # do not change render setting, user has their own way
         # Global.setRenderSetting(True)
 
     def layGround(self):
@@ -229,6 +224,11 @@ class IMP_OT_FBX(bpy.types.Operator):
             Global.getAmtr()["Collection"] = Util.cur_col_name()
             reload_dropdowns("choose_daz_figure")
             pose.add_skeleton_data()
+
+            # Translate any global Bone Name(s)
+            DtbIKBones.ik_name = DataBase.translate_bonenames(DtbIKBones.ik_name)
+            DtbIKBones.bone_name = DataBase.translate_bonenames(DtbIKBones.bone_name)
+            db.translate_member_bonenames()
 
             Global.deselect()  # deselect all the objects
             print("clear pose")
@@ -300,12 +300,14 @@ class IMP_OT_FBX(bpy.types.Operator):
 
             # DB: 2022-Sept-7, Get_Genital()
             DtbCommands.Get_Genital(dtu)
+            dsk.make_body_mesh_drivers(Global.getBody())
+
             # Shape keys
             # Only if user want drivers
             if Global.bUseDrivers:
                 print("Use Drivers")
-                dsk.make_body_mesh_drivers(Global.getBody())
-                # dsk.make_drivers()
+                # dsk.make_body_mesh_drivers(Global.getBody())
+                dsk.make_drivers()
                 Global.deselect()
 
             self.pbar(60, wm)
@@ -347,7 +349,7 @@ class IMP_OT_FBX(bpy.types.Operator):
             # materials
             # handle Principled BSDF mat
             # This offical bridge do not use Principled BSDF node, so forbitMinus() actually does nothing
-            # DtbMaterial.forbitMinus()
+            DtbMaterial.forbitMinus()
             self.pbar(95, wm)
             Global.deselect()
 
@@ -452,14 +454,11 @@ class IMP_OT_FBX(bpy.types.Operator):
             print(self.root)
         if self.root == "":
             self.report({"ERROR"}, "Configuration Error: unable to determine intermediate folder path!")
-            # self.report({"ERROR"}, "Appropriate FBX does not exist!")
             return {"FINISHED"}
         if os.path.exists(self.root) == False:
             self.report({"ERROR"}, "No exports found in intermediate folder: \"" + self.root + "\".")
-
             return {"FINISHED"}
         self.layGround()
-
         current_dir = os.getcwd()
 
         os.chdir(self.root)
@@ -629,6 +628,23 @@ class CLEAR_OT_Pose(bpy.types.Operator):
 
         if bpy.context.object is None:
             return
+        # if context is not pose mode, switch to pose mode
+        if bpy.context.mode != "POSE":
+            bpy.ops.object.mode_set(mode="POSE")
+        # disable IK handles
+        ik_undo_table = [False, False, False, False]
+        try:
+            for idx in range(4):
+                ik_value = DtbIKBones.get_ik_influence(
+                    DtbIKBones.get_influece_data_path(DtbIKBones.bone_name[idx])
+                )
+                if ik_value >= 0.5:
+                    ik_undo_table[idx] = True
+                DtbIKBones.bone_disp(idx, True)
+                DtbIKBones.iktofk(idx)
+                DtbIKBones.reset_pole(idx)
+        except:
+            pass
         if (
             Global.getAmtr() is not None
             and Versions.get_active_object() == Global.getAmtr()
@@ -641,11 +657,17 @@ class CLEAR_OT_Pose(bpy.types.Operator):
         ):
             for pb in Global.getRgfy().pose.bones:
                 pb.bone.select = True
-
         bpy.ops.pose.transforms_clear()
         bpy.ops.pose.select_all(action="DESELECT")
-
-        Global.setOpsMode("OBJECT")
+        # restore IK handles
+        try:
+            for idx in range(4):
+                if ik_undo_table[idx]:
+                    DtbIKBones.bone_disp(idx, False)
+                    DtbIKBones.fktoik(idx)
+        except:
+            pass
+        bpy.ops.pose.select_all(action="DESELECT")
 
     def execute(self, context):
         self.clear_pose()
@@ -701,6 +723,10 @@ class TRANS_OT_Rigify(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
+        ## TODO: add G9 support
+        if Global.getIsG9():
+            self.report({"ERROR"}, "Genesis 9 is not supported yet in the auto Rigify tool.")
+            return {"FINISHED"}
         clear_pose()
         Util.active_object_to_current_collection()
         dtu = DataBase.DtuLoader()

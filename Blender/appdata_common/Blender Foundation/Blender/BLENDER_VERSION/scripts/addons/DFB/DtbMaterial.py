@@ -1,9 +1,7 @@
-import logging
 import os
 import json
 import pathlib
 import bpy
-# import pprint
 
 from . import Global
 from . import NodeArrange
@@ -247,6 +245,9 @@ class DtbShaders:
             "EyeMoisture.00",
             "EylsMoisture",
             "Tear",
+            # G9 material support
+            "EyeMoisture Left",
+            "EyeMoisture Right",
         ]:
             return "EyeWet"
 
@@ -257,7 +258,6 @@ class DtbShaders:
             return "Eyelashes"
 
         elif material_type == "Iray Uber":
-            # if object_type == "Actor/Character":
             if object_type == "Actor/Character" or object_type == "Follower/Attachment/Lower-Body/Hip/Front":
                 return "IrayUberSkin"
             else:
@@ -328,6 +328,11 @@ class DtbShaders:
                 "Tear",
                 "Eyelashes",
                 "Glass",
+                # G9 material support
+                "EyeMoisture Left",
+                "EyeMoisture Right",
+                "Eye Left",
+                "Eye Right",
             ]:
                 Versions.eevee_alpha(mat, "HASHED", 0)
 

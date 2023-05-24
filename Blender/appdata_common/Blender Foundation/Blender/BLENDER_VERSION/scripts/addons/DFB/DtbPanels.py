@@ -146,6 +146,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         box.prop(dtbImportOptGroup, "bUsePrincipledMat")
         if dtbImportOptGroup.bUsePrincipledMat:
             box.prop(dtbImportOptGroup, "bUseTextureForSSS")
+            box.prop(dtbImportOptGroup, "sss_rate")
 
         l.prop(dtbImportOptGroup, "isHighHeel")
         l.prop(dtbImportOptGroup, "bJoinEyelashToBody")
@@ -164,7 +165,7 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
         if dtbImportOptGroup.bConvertBumpToNormal:
             box.prop(dtbImportOptGroup, "bReuseNormal")
 
-        l.prop(dtbImportOptGroup, "sss_rate")
+        
 
         # set import option
         Global.bUsePrincipledMat = dtbImportOptGroup.bUsePrincipledMat
@@ -248,8 +249,8 @@ class DTB_PT_MAIN(View3DPanel, bpy.types.Panel):
                     row = l.row(align=True)
                     row.operator("dfb_export.morph", icon="TRIA_LEFT")
                     row.operator("dfb_to.sculpt", icon="MONKEY")
-                    if DtbIKBones.obj_exsported != "":
-                        l.label(text=DtbIKBones.obj_exsported)
+                    if DtbIKBones.obj_exported != "":
+                        l.label(text=DtbIKBones.obj_exported)
 
                 l.separator()
 

@@ -171,7 +171,7 @@ def load_config():
                 data = json.load(f)
         except:
             print("ERROR: Unable to read DazToBlender config file: \"" + config_file_path + "\".")
-        return data
+    return data
 
 
 def key_exists(key, data):

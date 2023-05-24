@@ -1,7 +1,7 @@
 bl_info = {
     "name": "DazForBlender",
     "author": "Daz 3D | https://www.daz3d.com",
-    "version": (2, 26, 2),
+    "version": (2, 27, 0),
     "blender": (3, 1, 0),
     "location": "3DView > ToolShelf",
     "description": "Daz 3D Genesis 3/8 transfer to Blender",
@@ -32,6 +32,7 @@ from . import Util
 from . import DtbCommands
 from . import DtbIKBones
 from . import DtbProperties
+from . import DataBase
 
 from bpy.props import PointerProperty
 from bpy.app.handlers import persistent
@@ -172,10 +173,10 @@ class EXP_OT_morph(bpy.types.Operator):
 
     def execute(self, context):
         is_body = context.active_object == Global.getBody()
-        global obj_exsported
+        #global obj_exported
         ddm = DtbDazMorph.DtbDazMorph()
         ddm.before_execute(is_body)
-        flg_ok = ddm.top_exsport()
+        flg_ok = ddm.top_export()
         if flg_ok == False:
             self.report({"ERROR"}, "There is no suitable shape key")
         return {"FINISHED"}
@@ -244,7 +245,7 @@ class LIMB_OT_redraw(bpy.types.Operator):
             elif i == 2:
                 if w_mgr.ifk2 != flg_ik:
                     w_mgr.ifk2 = flg_ik
-                c = Global.getAmtrConstraint("rFoot", "Copy Rotation")
+                c = Global.getAmtrConstraint(DataBase.translate_bonenames("rFoot"), "Copy Rotation")
                 if c is not None and c.influence != ik_value:
                     c.influence = ik_value
             elif i == 3:
@@ -328,9 +329,9 @@ def register():
     DtbProperties.update_config()
     load_handler(None)
     bpy.app.handlers.load_post.append(load_handler)
-    print("DazToBlender: loaded, version %i.%i.%i" % bl_info["version"] )
+    print("DazForBlender: loaded, version %i.%i.%i" % bl_info["version"] )
     intermediateFolder = Global.getRootPath()
-    print("DazToBlender: Default Intermediate Folder path: \"%s\"." % intermediateFolder )
+    print("DazForBlender: Default Intermediate Folder path: \"%s\"." % intermediateFolder )
     # Import Option Group
     bpy.types.Scene.dtbImportOptGroup = bpy.props.PointerProperty(type=DtbPanels.ImportOptionGroup)
 

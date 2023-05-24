@@ -2,7 +2,6 @@ import bpy
 import os
 import math
 import json
-import platform
 from copy import deepcopy
 from . import DataBase
 from . import Versions
@@ -116,6 +115,9 @@ def getMyMax3():
 def getIsG3():
     return get_geo_idx() == G3_GEOIDX
 
+# DB 2023-Mar-27: G9 suport
+def getIsG9():
+    return getAmtr().data.bones.find('l_forearmtwist2') != -1
 
 def getIsEmergency():
     return IS_EMERGENCY
@@ -368,17 +370,7 @@ def find_BODY(dobj):
                 if modifier.object.name == _AMTR or modifier.object.name == _RGFY:
                     figure_name = dobj.name.replace(".Shape", "")
                     figure_name = figure_name.split(".")[0]
-                    if figure_name in [
-                        "Genesis8Female",
-                        "Genesis8Male",
-                        "Genesis8_1Male",
-                        "Genesis8_1Female",
-                        "Genesis3Male",
-                        "Genesis3Female",
-                        "Genesis2Female",
-                        "Genesis2Male",
-                        "Genesis",
-                    ]:
+                    if figure_name in DataBase.get_figure_list():
                         _BODY = dobj.name
                         return True
 
@@ -707,7 +699,7 @@ def boneRotation_onoff(context, flg_on):
             if c.name == "Limit Rotation":
                 c.mute = flg_on == False
 
-
+import platform
 def getHomeDir():
     if (platform.system() == "Windows"):
         try:
@@ -733,7 +725,6 @@ def getHomeDir():
         HOME_DIR = os.path.expanduser("~")
     return HOME_DIR
 
-
 def getRootPath():
     global root
 
@@ -741,27 +732,6 @@ def getRootPath():
     root = os.path.join(HOME_DIR, "DAZ 3D", "Bridges", "Daz To Blender", "Exports").replace("\\", "/")
 
     return root
-
-
-
-
-# Old code, but not used in DTB 2022, so I merged DTB 2022's code to replace this.
-# def getRootPath():
-#     global root
-#     # if bpy.context.window_manager.use_custom_path:
-#     #     root = ""
-#     # else:
-#     if root == "":
-#         hdir = os.path.expanduser("~")
-#         hdir = os.path.join(
-#             hdir, "Documents", "DAZ 3D", "Bridges", "Daz To Blender", "Exports"
-#         )
-#         print("Files Should be Exporting to : {0}".format(hdir))
-#         if os.path.exists(hdir):
-#             root = hdir
-#         else:
-#             root = ""
-#     return root
 
 
 def get_custom_path():
@@ -786,21 +756,6 @@ def get_config_path():
                 print("ERROR: Unable to create config path:\"" + str(hdir) + "\".")
                 config = ""
     return config
-
-
-# Old code, but not used in DTB 2022, so I merged DTB 2022's code to replace this.
-# def get_config_path():
-#     global config
-#     if config == "":
-#         hdir = os.path.expanduser("~")
-#         hdir = os.path.join(
-#             hdir, "Documents", "DAZ 3D", "Bridges", "Daz To Blender", "Config"
-#         )
-#         if os.path.exists(hdir):
-#             config = hdir
-#         else:
-#             config = ""
-#     return config
 
 
 def load_asset_name():
@@ -1078,17 +1033,8 @@ def bone_limit_modify(bone_limits):
 
         elif do_conversion and order == "YZX":
             # Bones that are pointed down with YZX order
-            # TODO: remove hardcoding
-            if name in [
-                "hip",
-                "pelvis",
-                "lThighBend",
-                "rThighBend",
-                "lThighTwist",
-                "rThighTwist",
-                "lShin",
-                "rShin",
-            ]:
+            lower_extremities_to_flip = DataBase.get_lower_extremities_to_flip()
+            if name in lower_extremities_to_flip:
                 # Y invert (-Y)
                 temp = 0 - bone_limit[5]
                 bone_limit[5] = 0 - bone_limit[4]
@@ -1206,6 +1152,19 @@ def toMergeWeight_str(dobj, ruler_name, slave_names, flg_head, flg_half):
             toMergeWeight2(dobj, ruler, slave, flg_half)
         else:
             toMergeWeight(dobj, ruler, slave)
+
+def getFootAngle_matrix(r_l):
+    bones = ["hip", "pelvis", "ThighBend", "ThighTwist", "Shin", "Foot"]
+    if getIsG9():
+        bones = ["hip", "pelvis", "_thigh", "", "_shin", "_foot"]
+    bone_name = "l" + bones[-1]
+    if r_l == 0:
+        bone_name = "r" + bones[-1]
+    pose_bone = getAmtr().pose.bones.get(bone_name)
+    if pose_bone is None:
+        return [0, 0, 0]
+    return_matrix = pose_bone.matrix
+    return return_matrix
 
 
 def getFootAngle(r_l):

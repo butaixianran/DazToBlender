@@ -591,4 +591,3 @@ def check_custom_shape_scale_equal(obj, value):
             return True
         else:
             return False
-

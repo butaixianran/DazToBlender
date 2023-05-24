@@ -99,16 +99,8 @@ class DtbShapeKeys:
         if prefix == "r" and post_prefix.isupper():
             is_right = True
         is_down = False
-        if bone_name in [
-            "hip",
-            "pelvis",
-            "lThighBend",
-            "rThighBend",
-            "lThighTwist",
-            "rThighTwist",
-            "lShin",
-            "rShin",
-        ]:
+        lower_extremities_to_flip = DataBase.get_lower_extremities_to_flip()
+        if bone_name in lower_extremities_to_flip:
             is_down = True
 
         if bone_order == "XYZ":
@@ -187,8 +179,6 @@ class DtbShapeKeys:
             # ERCKeyed
 
             keyed = morph_link["Keys"]
-            key_0 = "0"
-            key_1 = "0"
 
             # Currently Skip the 3rd Key if Key 0 has two
             for i in range(len(keyed)):
@@ -208,7 +198,7 @@ class DtbShapeKeys:
 
             # Temporily Run lForearmBend as absolute as incorrect roll is applied.
             bone_name = morph_link["Bone"]
-            if bone_name == "lForearmBend" or bone_name == "l_forearm":
+            if bone_name == "lForearmBend":
                 key_0 = str(abs(float(key_0)))
                 key_1 = str(abs(float(key_1)))
 
@@ -287,8 +277,9 @@ class DtbShapeKeys:
         if key_block.name == "Basis":
             return
 
-        # Create a custom property and set limits
         mesh_obj[morph_label] = 0.0
+
+        # Create a custom property and set limits
         rna_ui = mesh_obj.get("_RNA_UI")
         if rna_ui is None:
             mesh_obj["_RNA_UI"] = {}
@@ -299,8 +290,6 @@ class DtbShapeKeys:
             "soft_min": shape_key_min,
             "soft_max": shape_key_max,
         }
-
-
         # Custom UI code for blender 3+
         if bpy.app.version[0] >= 3:
             id_props = mesh_obj.id_properties_ui(morph_label)
@@ -341,6 +330,9 @@ class DtbShapeKeys:
 
         # Create a custom property and set limits
         mesh_obj[morph_label] = 0.0
+
+        # DB: 2022-June-6: Do not remove this code for now: used by DtbPanels.py,
+        #   DTB_PT_MORPHS.draw() to find and draw UI for shape keys
         rna_ui = mesh_obj.get("_RNA_UI")
         if rna_ui is None:
             mesh_obj["_RNA_UI"] = {}
@@ -351,7 +343,6 @@ class DtbShapeKeys:
             "soft_min": shape_key_min,
             "soft_max": shape_key_max,
         }
-
         # Custom UI code for blender 3+
         if bpy.app.version[0] >= 3:
             id_props = mesh_obj.id_properties_ui(morph_label)
@@ -361,7 +352,6 @@ class DtbShapeKeys:
                 soft_min=shape_key_min,
                 soft_max=shape_key_max,
             )
-
 
         # Add driver
         driver = key_block.driver_add("value").driver
@@ -468,11 +458,11 @@ class DtbShapeKeys:
         morph_links_list = self.load_morph_link_list()
         shape_key_blocks = shape_key.key_blocks
         for key_block in shape_key_blocks:
-
             if "__" not in key_block.name:
                 key_name = key_block.name
             else:
                 key_name = key_block.name[len(mesh_name + "__") :]
+            #print("DEBUG: key_name=" + key_name)
 
             # Continue for Basis key block or not found in the morph links list
             if not key_name or key_name not in morph_links_list:
@@ -520,11 +510,10 @@ class DtbShapeKeys:
                     var_count += 1
 
                 exp = self.get_target_expression(var.name, morph_link, driver)
-                if len(expression + exp + "+") >= 255:
+                if len(expression + exp + "+") > 255:
                     # Driver script expression max lenght is 255
                     # break when the limit is reached to avoid errors
                     break
-
                 expression += self.combine_target_expression(
                     exp, updated_morph_links, link_index
                 )
@@ -562,7 +551,6 @@ class DtbShapeKeys:
             # Set the Limits for Shapekey
             key_block.slider_min = shape_key_min
             key_block.slider_max = shape_key_max
-
 
     def make_other_mesh_drivers(self, other_mesh_obj, body_mesh_obj):
         other_mesh_name_shape = other_mesh_obj.name
