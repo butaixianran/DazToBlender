@@ -5,7 +5,7 @@
 ![addon](img/addon_screenshot.jpg)
 
 #### Version
-addon: 2.27.0   
+addon: 2023.1.1.15   
 blender: >= 3.1
 
 
