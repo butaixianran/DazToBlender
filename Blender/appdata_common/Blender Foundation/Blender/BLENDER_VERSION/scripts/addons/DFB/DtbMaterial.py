@@ -1197,6 +1197,15 @@ class DtbShaders:
                     Normal_Map = self.mat_property_dict.get("Normal Map")
                     Bump_Strength = self.mat_property_dict.get("Bump Strength")
 
+                    if not Normal_Map:
+                        Normal_Map = self.mat_property_dict.get("Detail Normal Map")
+
+                        if not Normal_Map:
+                            Normal_Map = {"Value": 0, "Texture": ""}
+
+                    if not Bump_Strength:
+                        Bump_Strength = {"Value": 0, "Texture": ""}
+
                     if len(Normal_Map["Texture"])>0:
                         #get Normal Map node:
                         self.set_tex_node(Normal_Map["Texture"], "Normal Map", mat_nodes, mat_links, normal_node, "Color")
