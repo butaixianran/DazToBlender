@@ -1,7 +1,7 @@
 bl_info = {
     "name": "DazForBlender",
     "author": "Daz 3D | https://www.daz3d.com",
-    "version": (2, 27, 0),
+    "version": (2023, 1, 1, 15),
     "blender": (3, 1, 0),
     "location": "3DView > ToolShelf",
     "description": "Daz 3D Genesis 3/8 transfer to Blender",
@@ -9,7 +9,7 @@ bl_info = {
     "support": "COMMUNITY",
     "doc_url": "https://github.com/butaixianran/DazToBlender/#readme",
     "tracker_url": "https://github.com/butaixianran/DazToBlender/issues",
-    "category": "Armature",
+    "category": "Import-Export",
 }
 
 import sys
@@ -193,7 +193,7 @@ class FK2IK_OT_button(bpy.types.Operator):
             rgfy = ToRigify.ToRigify()
             rgfy.ik2fk(-1)
         else:
-            DtbIKBones.bone_disp(-1, False)
+            DtbIKBones.hide_ik(-1, False)
             DtbIKBones.mute_bones.append("NG")
             for i in range(len(DtbIKBones.bone_name)):
                 DtbIKBones.fktoik(i)
@@ -213,7 +213,7 @@ class IK2FK_OT_button(bpy.types.Operator):
             rgfy = ToRigify.ToRigify()
             rgfy.fk2ik(-1)
         else:
-            DtbIKBones.bone_disp(-1, True)
+            DtbIKBones.hide_ik(-1, True)
             DtbIKBones.mute_bones.append("NG")
             for i in range(len(DtbIKBones.bone_name)):
                 DtbIKBones.iktofk(i)
@@ -235,7 +235,7 @@ class LIMB_OT_redraw(bpy.types.Operator):
                 DtbIKBones.get_influece_data_path(DtbIKBones.bone_name[i])
             )
             flg_ik = ik_value >= 0.5
-            DtbIKBones.bone_disp(i, flg_ik == False)
+            DtbIKBones.hide_ik(i, flg_ik == False)
             if i == 0:
                 if w_mgr.ifk0 != flg_ik:
                     w_mgr.ifk0 = flg_ik
@@ -320,7 +320,6 @@ def load_handler(dummy):
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-
     DtbProperties.init_props()
     DtbProperties.config_props()
     bpy.types.Scene.dfb_custom_path = PointerProperty(
@@ -329,7 +328,7 @@ def register():
     DtbProperties.update_config()
     load_handler(None)
     bpy.app.handlers.load_post.append(load_handler)
-    print("DazForBlender: loaded, version %i.%i.%i" % bl_info["version"] )
+    print("DazToBlender: loaded, version %i.%i.%i.%i" % bl_info["version"] )
     intermediateFolder = Global.getRootPath()
     print("DazForBlender: Default Intermediate Folder path: \"%s\"." % intermediateFolder )
     # Import Option Group

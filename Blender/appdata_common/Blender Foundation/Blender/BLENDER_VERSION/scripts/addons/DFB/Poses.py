@@ -22,7 +22,6 @@ class Posing:
 
     def __init__(self, dtu):
         if isinstance(dtu, str):
-            # print("is instance")
             self.select_figure()
             Global.setOpsMode("POSE")
         else:
@@ -36,7 +35,7 @@ class Posing:
             json_object = json.load(myjson)
         except ValueError as e:
             return False
-        return True
+        return True    
 
 
     def load_duf(self, input_duf):
@@ -348,6 +347,9 @@ class Posing:
             return
 
         self.pose_data_dict["Asset Name"] = pose_data["asset_info"]["id"].split("/")[-1].replace("%20"," ").replace(".duf","")
+        if "animations" not in pose_data["scene"].keys():
+            print("ERROR: Import Pose: No Pose Data in selected file.")
+            return
         for info in pose_data["scene"]["animations"]:
             url = info["url"]
             keys = info["keys"]
@@ -363,11 +365,14 @@ class Posing:
                 axis = sep[3]
             else:
                 bone = sep[3].split(":?")[0]
-                transform = sep[3].split(":?")[1]
-                axis = sep[4]
+                try:
+                    transform = sep[3].split(":?")[1]
+                    axis = sep[4]
+                except Exception as e:
+                    print("ERROR: Import Pose: error retrieving pose data for bone: " + bone + ": " + str(e))
+                    continue
 
             value = keys[0][1]
-
             if bone not in self.pose_data_dict.keys():
                 self.pose_data_dict[bone] = {}
             if "Position" not in self.pose_data_dict[bone].keys():
@@ -757,18 +762,6 @@ class Posing:
                         num = " " + self.fig_object_name[-1]
                     bpy.ops.pose.select_all(action="SELECT")
                     bpy.ops.poselib.pose_add(frame=0, name=str(self.fig_object["Asset Name"] + " Pose"))
-                # else:
-                #     num = ""
-                #     if ".0" in self.fig_object_name:
-                #         num = " " + self.fig_object_name[-1]
-                #     bpy.ops.pose.select_all(action="SELECT")
-
-                #     pose_name = str(self.fig_object["Asset Name"] + " Pose")
-
-                #     if "Asset Name" in transform_data.keys():
-                #         pose_name = transform_data["Asset Name"]                    
-
-                #     bpy.ops.poselib.pose_add(frame=0, name=pose_name)
                     action = bpy.data.actions["PoseLib"]
                     action.name = self.fig_object["Asset Name"] + num + " Pose Library"
                     bpy.ops.pose.select_all(action="DESELECT")
@@ -1037,13 +1030,8 @@ class Posing:
             name = self.fig_object["Asset Name"] + num + " Pose Library"
         else:
             name = self.fig_object["Asset Name"] + " Pose Library"
-
-        # print("name:")
-        # print(name)
-
         if name in bpy.data.actions.keys():  
             return True
-
 
 
     # Add Pose to Library
@@ -1069,6 +1057,7 @@ class Posing:
        
     
     def restore_pose(self):
+        # print("2023-July-02, DEBUG: restore_pose() called.")
         Versions.active_object(Global.getAmtr())
         Global.setOpsMode("POSE")
         self.make_pose()

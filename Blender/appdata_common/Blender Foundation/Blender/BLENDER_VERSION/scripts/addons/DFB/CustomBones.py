@@ -12,7 +12,7 @@ class CBones:
     shapes = ['triang_up', 'triang_down', 'triang_yoko','rhombus1', 'rhombus2',
               'pentagon',
               'octagon1','octagon2','square1','square2','rect1','rect2']
-              
+
     def __init__(self):
         self.face_bones = []
         self.limb_bones = []

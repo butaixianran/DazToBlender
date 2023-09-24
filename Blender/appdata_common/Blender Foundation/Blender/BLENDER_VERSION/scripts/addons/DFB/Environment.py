@@ -37,7 +37,6 @@ class EnvProp:
         self.execute()
 
     def execute(self):
-        print("execute env")
         wm = bpy.context.window_manager
         wm.progress_begin(0, 100)
         Versions.active_object_none() # deselect all
